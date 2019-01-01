@@ -10,5 +10,600 @@
     <lastBuildDate>Sun, 15 Oct 2017 00:00:00 -0400</lastBuildDate>
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title>Introduction</title>
+      <link>https://dburkhardt.github.io/tutorial/introduction/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/introduction/</guid>
+      <description>&lt;p&gt;As single cell RNA-sequencing experiments become more popular, we keep on hearing a few questions over and over: &amp;ldquo;How should I start analyzing my data?&amp;rdquo; &amp;ldquo;What&amp;rsquo;s the advantage of using &lt;a href=&#34;https://github.com/krishnaswamylab/PHATE&#34; target=&#34;_blank&#34;&gt;PHATE&lt;/a&gt; over t-SNE?&amp;rdquo; &amp;ldquo;How should I cluster my data?&amp;rdquo; &amp;ldquo;How can I identify differentially expressed genes between these two clusters?&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;High throughput technologies are only a few years old, and there are not many (if any) standards for analyzing a dataset. This being said, there are a few nice tutorials out there. Rahul Satija&amp;rsquo;s lab at the NY Genome Center, the home of the popular Seurat toolkit has &lt;a href=&#34;https://satijalab.org/seurat/get_started.html&#34; target=&#34;_blank&#34;&gt;a collection of easy-to-follow tutorials&lt;/a&gt;. In May of this year, the Hemberg lab at the Sanger Institute posted &lt;a href=&#34;https://hemberg-lab.github.io/scRNA.seq.course/index.html&#34; target=&#34;_blank&#34;&gt;a great single cell course&lt;/a&gt; as part of the Bioinformatics Training Unit at Cambridge. John Marioni&amp;rsquo;s lab at UCL has a paper on F1000 on &lt;a href=&#34;https://f1000research.com/articles/5-2122/v2&#34; target=&#34;_blank&#34;&gt;Low-level analysis of single-cell RNA-seq data with Bioconductor&lt;/a&gt;. A quick google search will reveal a handful of other tutorials out there. I encourage reading widely and getting a sense of what other groups do. There are many ways to do single cell analysis. Some ways are definitely bad (don&amp;rsquo;t get us started on clustering on t-SNE dimensions), but usually the important thing is trying to understand &lt;strong&gt;how&lt;/strong&gt; the methods you apply work and &lt;strong&gt;why&lt;/strong&gt; you might pick one tool or another. In general, you should view the results of most of these analysis as hypotheses that need to be validated by the specific tools of your discipline.&lt;/p&gt;
+
+&lt;p&gt;This being said, in the Krishnaswamy lab, we have gone through hundreds of samples of scRNA-seq data and have learned a lot along the way. We have developed a growing number of novel methods for analyzing these datasets and extracting biological meaning. You can find all of our tools publicly available on our lab github: &lt;a href=&#34;https://github.com/krishnaswamylab/&#34; target=&#34;_blank&#34;&gt;https://github.com/krishnaswamylab/&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this introductory post, my goal is to go through the basics of analyzing a single cell RNA-sequencing dataset composed of a few samples. I&amp;rsquo;m assuming you already know what scRNA-seq is and have read a few papers in the field. I&amp;rsquo;m also assuming you&amp;rsquo;ve heard of Python and are willing to learn Numpy, Pandas, and Matplotlib. Most of the tools in the lab have been ported to R and are available as part of the scanpy and seurat packages, but all of us in the lab use python when we&amp;rsquo;re analyzing datasets.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;rsquo;s the basic workflow we&amp;rsquo;re going to cover in this post:&lt;br /&gt;
+1. Using the scprep toolkit for loading your data&lt;br /&gt;
+2. Filtering cells based on library size&lt;br /&gt;
+3. Filtering lowly expressed genes&lt;br /&gt;
+4. Examining expression of mitochondrial RNA&lt;br /&gt;
+5. Visualizing data using PCA&lt;br /&gt;
+6. Visualizing data using PHATE&lt;br /&gt;
+7. Imputing data using MAGIC&lt;br /&gt;
+8. Examining the expression of marker genes&lt;/p&gt;
+
+&lt;p&gt;We already have a set of tutorials for some of these tools on our lab Github: www.github.com/krishnaswamylab but here I will take a higher level approach to starting analysis and provide some insights that will hopefully facilitate your analysis.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>1. Preprocessing</title>
+      <link>https://dburkhardt.github.io/tutorial/preprocessing/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/preprocessing/</guid>
+      <description>
+
+&lt;h2 id=&#34;1-0-introducing-scprep&#34;&gt;1.0 Introducing &lt;code&gt;scprep&lt;/code&gt;&lt;/h2&gt;
+
+&lt;h4 id=&#34;scprep-is-a-lightweight-scrna-seq-toolkit-for-python-data-scientists&#34;&gt;Scprep is a lightweight scRNA-seq toolkit for Python Data Scientists&lt;/h4&gt;
+
+&lt;p&gt;Most scRNA-seq toolkits are written in R, but we develop our tools in Python. Currently, &lt;a href=&#34;https://github.com/theislab/scanpy&#34; target=&#34;_blank&#34;&gt;Scanpy&lt;/a&gt; is the most popular toolkit for scRNA-seq analysis in Python. In fact, if you&amp;rsquo;d prefer to use that, you can find most of our lab&amp;rsquo;s analytical methods including PHATE and MAGIC in scanpy. However, scanpy has a  highly structured framework for data representation and a steep learning curve that is unnescessary for users already comfortable with the suite of methods available in &lt;a href=&#34;https://pandas.pydata.org/&#34; target=&#34;_blank&#34;&gt;Pandas&lt;/a&gt;, &lt;a href=&#34;https://www.scipy.org/&#34; target=&#34;_blank&#34;&gt;Scipy&lt;/a&gt;, and &lt;a href=&#34;http://scikit-learn.org/stable/&#34; target=&#34;_blank&#34;&gt;Sklearn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To accomodate these users (including ourselves) we developed &lt;code&gt;scprep&lt;/code&gt; (&lt;strong&gt;s&lt;/strong&gt;ingle &lt;strong&gt;c&lt;/strong&gt;ell &lt;strong&gt;prep&lt;/strong&gt;aration). &lt;code&gt;scprep&lt;/code&gt; makes it easier to use the Pandas / Scipy / Sklearn ecosystem for scRNA-seq analysis. Most of &lt;code&gt;scprep&lt;/code&gt; is composed of helper functions to perform tasks common to single cell data like loading counts matrices, filtering &amp;amp; normalizing cells by library size, and calculating common statistics. The key advantage of scprep is that data can be stored in Pandas DataFrames, Numpy arrays, Scipy Sparse Matices, it is &lt;em&gt;just works&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;For users starting out, you might find it more valuable to spend time spent getting comfortable with these tools because they can be used for analysis of all kinds of data, not just scRNA-seq. If you want to learn more, checkout the &lt;a href=&#34;https://docs.scipy.org/doc/numpy-1.15.1/user/quickstart.html&#34; target=&#34;_blank&#34;&gt;Numpy Quickstart Tutorial&lt;/a&gt;, the &lt;a href=&#34;https://pandas.pydata.org/pandas-docs/stable/tutorials.html&#34; target=&#34;_blank&#34;&gt;Pandas Tutorials&lt;/a&gt;, the &lt;a href=&#34;https://matplotlib.org/tutorials/index.html&#34; target=&#34;_blank&#34;&gt;Matplotlib Tutorials&lt;/a&gt;, and consider getting a copy of Wes McKinney&amp;rsquo;s book &lt;a href=&#34;http://shop.oreilly.com/product/0636920050896.do&#34; target=&#34;_blank&#34;&gt;Python for Data Analysis&lt;/a&gt;. McKinney is the original author of Pandas, and I&amp;rsquo;m glad I went through the book at the beginning of my PhD.&lt;/p&gt;
+
+&lt;h3 id=&#34;installation&#34;&gt;Installation&lt;/h3&gt;
+
+&lt;p&gt;From here on out, I will assume that you have Python, Numpy, Pandas, Scipy, Scikit-learn, and Matplotlib all installed.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;scprep&lt;/code&gt; package is available on &lt;a href=&#34;https://github.com/krishnaswamylab/scprep&#34; target=&#34;_blank&#34;&gt;GitHub&lt;/a&gt; and on &lt;a href=&#34;https://pypi.org/project/scprep/&#34; target=&#34;_blank&#34;&gt;PyPI&lt;/a&gt; so the install is straightforward:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ pip install --user scprep&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In &lt;code&gt;scprep&lt;/code&gt; you&amp;rsquo;ll find tools for loading single cell data (&lt;code&gt;scprep.io&lt;/code&gt;), library size normalization (&lt;code&gt;scprep.normalize&lt;/code&gt;), transforming data (&lt;code&gt;scprep.transform&lt;/code&gt;), performing statistical calculations (&lt;code&gt;scprep.stats&lt;/code&gt;), and many others. Check out &lt;a href=&#34;https://scprep.readthedocs.io/&#34; target=&#34;_blank&#34;&gt;the screp documentation&lt;/a&gt; for the full API.&lt;/p&gt;
+
+&lt;h2 id=&#34;1-1-using-scprep-to-load-a-10x-genomics-counts-matrix&#34;&gt;1.1 - Using scprep to load a 10X Genomics counts matrix&lt;/h2&gt;
+
+&lt;p&gt;Most of the labs we work with use 10X Genomics for single cell sequencing, so we&amp;rsquo;ll use this as an example.&lt;/p&gt;
+
+&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;p&gt;&lt;code&gt;scprep.io&lt;/code&gt; also has helper functions for csv, tsv, and mtx files.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+&lt;p&gt;Say your 10X data is in &lt;code&gt;/home/user/data/my_sample&lt;/code&gt;. To load your data, run:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; scprep
+data_uf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;/home/user/data/my_sample/outs/filtered_gene_bc_matrices/my_genome/&amp;#39;&lt;/span&gt;, sparse&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True, gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Here, &lt;code&gt;data_uf&lt;/code&gt; is my shorthand for &amp;lsquo;data_unfiltered&amp;rsquo;. &lt;code&gt;load_10X&lt;/code&gt; and other &lt;code&gt;scprep.io&lt;/code&gt; functions return a &lt;a href=&#34;https://pandas.pydata.org/pandas-docs/stable/sparse.html&#34; target=&#34;_blank&#34;&gt;Pandas &lt;code&gt;SparseDataFrame&lt;/code&gt;&lt;/a&gt; by default. The &lt;code&gt;SparseDataFrame&lt;/code&gt; behaves similarly to regular Pandas &lt;code&gt;DataFrames&lt;/code&gt;, but take up much less memory by storing only non-zero values and their indices in memory. Note: operations are sparse matrices are slower than dense matrices. If you can afford to store the dense matrix in memory, set &lt;code&gt;sparse=False&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;As an aside, many genome annotations (the descriptions of where genes are located on a given genome) contain non-unique gene symbols, so with &lt;code&gt;gene_labels=both&lt;/code&gt; we store the gene symbol and the gene ID as &lt;code&gt;&#39;ACTB (ENSG00000075624)&#39;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you look at the head of your data, you should see something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;data_uf.head()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;[sparse_dataframe_head.png]&lt;/p&gt;
+
+&lt;p&gt;Now, let&amp;rsquo;s start preprocessing your data.&lt;/p&gt;
+
+&lt;h2 id=&#34;1-2-merging-batches-using-scprep-optional&#34;&gt;1.2 -  Merging batches using &lt;code&gt;scprep&lt;/code&gt; (optional)&lt;/h2&gt;
+
+&lt;p&gt;This is the point to merge batches if you have multiple samples from the sample experiment that you want to compare. Although we&amp;rsquo;ll talk briefly about batch effects later, we&amp;rsquo;ll write a whole post about how to correct them at another point.&lt;/p&gt;
+
+&lt;h4 id=&#34;how-to-combine-samples&#34;&gt;How to combine samples&lt;/h4&gt;
+
+&lt;p&gt;Here, what we&amp;rsquo;re doing is taking counts matrices from each sample and stacking them vertically. We&amp;rsquo;ve implemented this in the &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.utils.combine_batches&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.utils.combine_batches&lt;/code&gt;&lt;/a&gt; function.&lt;/p&gt;
+
+&lt;p&gt;For this example, I&amp;rsquo;m going to use the Embryoid Body timecourse covered in the &lt;a href=&#34;http://nbviewer.jupyter.org/github/KrishnaswamyLab/PHATE/blob/master/Python/tutorial/EmbryoidBody.ipynb&#34; target=&#34;_blank&#34;&gt;PHATE tutorial&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Two important notes:&lt;/p&gt;
+
+&lt;p&gt;First, it&amp;rsquo;s important to know exactly which rows of the data matrix correspond to which sample so that we can separate them during downstream analysis. To facilitate this, &lt;code&gt;combine_batches()&lt;/code&gt; takes an list &lt;code&gt;batch_labels&lt;/code&gt; that contains one label per sample and returns an array &lt;code&gt;sample labels&lt;/code&gt; that contains the sample label for each row in the resulting matrix.&lt;/p&gt;
+
+&lt;p&gt;Second, it&amp;rsquo;s possible (and exceedingly common) for the same cell barcode to appear in multiple experiments. This becomes an issue when combining batches because you want each row to have a unique index. To solve this problem, we append the sample label to the cell barcode by setting &lt;code&gt;append_to_cell_names=True&lt;/code&gt;. This turns cell barcode &lt;code&gt;AAACATACCAGAGG-1&lt;/code&gt; from  sample &lt;code&gt;Day0-3&lt;/code&gt; to &lt;code&gt;AAACATACCAGAGG-1_Day0-3&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Loading each of 5 timepoints&lt;/span&gt;
+T1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T0_1A&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
+T2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T2_3B&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
+T3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T4_5C&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
+T4 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T6_7D&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
+T5 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T8_9E&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Concatenating data matrices&lt;/span&gt;
+EBT_counts, sample_labels &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;utils&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;combine_batches(
+    data&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[T1, T2, T3, T4, T5],
+    batch_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Day0-3&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Day6-9&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Day12-15&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Day18-21&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Day24-27&amp;#34;&lt;/span&gt;],
+    append_to_cell_names&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True
+)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# remove objects from memory&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;del&lt;/span&gt; T1, T2, T3, T4, T5  &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;p&gt;It&amp;rsquo;s good practice to remove the original data matrices from memory and avoid doubling the memory usage of our scripts.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+&lt;h2 id=&#34;1-3-filtering-cells-by-library-size&#34;&gt;1.3 -  Filtering cells by library size&lt;/h2&gt;
+
+&lt;h4 id=&#34;why-we-filter-cells-by-library-size&#34;&gt;Why we filter cells by library size&lt;/h4&gt;
+
+&lt;p&gt;In scRNA-seq the library size of a cell is the number of unique mRNA molecules detected in that cell. These unique molecules are identified using a random barcode incorporated during the first round of reverse transcription. This barcode is called a &lt;strong&gt;U&lt;/strong&gt;nique &lt;strong&gt;M&lt;/strong&gt;olecule &lt;strong&gt;I&lt;/strong&gt;ndicator, and often we refer to the number unique mRNAs in a cell as the number of UMIs. To read more about UMIs, &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5340976/&#34; target=&#34;_blank&#34;&gt;Smith &lt;em&gt;et al.&lt;/em&gt; (2017)&lt;/a&gt; write about how sequencing errors and PCR amplification errors lead to innaccurate quantification of UMIs/cell.&lt;/p&gt;
+
+&lt;p&gt;Depending on the method of scRNA-seq, the amount of library size filtering done can vary. The 10X Genomics CellRanger tool, the DropSeq and InDrops pipelines, and the Umitools package each have their own method and cutoff for determining real cells from empty droplets. You can take these methods at face value or set some manual cutoffs based on your data.&lt;/p&gt;
+
+&lt;h4 id=&#34;visualing-the-library-size-distribution-using-scprep&#34;&gt;Visualing the library size distribution using &lt;code&gt;scprep&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;There is a helper function for plotting library size from a gene expression matrix in scprep called &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.plot.plot_library_size&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.plot.plot_library_size()&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Here we can see a typical library size for a 10X dataset from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/?term=28099430&#34; target=&#34;_blank&#34;&gt;Datlinger &lt;em&gt;et al.&lt;/em&gt; (2017)&lt;/a&gt;. In this sample we see that there is a long tail of cells that have very high library sizes.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_example_normal.png&#34; alt=&#34;libsize example 1&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;selecting-a-cutoff&#34;&gt;Selecting a cutoff&lt;/h4&gt;
+
+&lt;p&gt;Several papers describe strategies for picking a maximum and minimum threshold that can be found with a quick google search for &amp;ldquo;library size threshold single cell RNA seq&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;Most of these pick an arbitrary measure such as a certain number of deviations below or above the mean or median library size. We find that spending too much time worrying about the exact threshold is inefficient.&lt;/p&gt;
+
+&lt;p&gt;For the above dataset, I would remove all cells with more than 25,000 UMI / cell in fear they might represent doublets of cells. I will generally also remove all cells with fewer than 500 reads per cell.&lt;/p&gt;
+
+&lt;h4 id=&#34;filtering-cells-by-library-size&#34;&gt;Filtering cells by library size&lt;/h4&gt;
+
+&lt;p&gt;You can do this using &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.filter.filter_library_size&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.filter.filter_library_size()&lt;/code&gt;&lt;/a&gt;. The syntax looks like:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter_library_size(data_uf, cutoff&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;25000&lt;/span&gt;, keep_cells&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;below&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And now when we plot the library size we see:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_example_filtered.png&#34; alt=&#34;libsize example 2&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Note that there are many different valid distributions of library sizes. See the following three libraries, all generated from different tissues in the zebrafish embryo. One of the libraries is from a failed experiment, and the other two are from published papers.&lt;/p&gt;
+
+&lt;p&gt;Can you tell which is which?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_comparison.png&#34; alt=&#34;libsize example 3&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here, Sample 1 is from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/29576475&#34; target=&#34;_blank&#34;&gt;Pandley &lt;em&gt;et al.&lt;/em&gt; (2018)&lt;/a&gt;, Sample 2 is an internal failed experiment, and Sample 3 is from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/29700225&#34; target=&#34;_blank&#34;&gt;Farrell &lt;em&gt;et al.&lt;/em&gt; (2018)&lt;/a&gt;. The low library size in Sample 2 is the giveaway with 90% of cells having fewer than 1200 UMI/cell and a mode at 325 UMI/cell. Additionally, this library generated a &lt;strong&gt;Low Fraction Reads in Cells&lt;/strong&gt; alert in the Cell Ranger web summary with only 33% of reads assigned to cells. To learn more about what this means, &lt;a href=&#34;https://community.10xgenomics.com/t5/Single-Cell-Forum/Reason-s-for-low-quot-Fraction-Reads-in-Cell-quot/td-p/5273&#34; target=&#34;_blank&#34;&gt;read this post in the 10X Forums.&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;1-4-filtering-lowly-expressed-genes&#34;&gt;1.4 - Filtering lowly expressed genes&lt;/h2&gt;
+
+&lt;h4 id=&#34;why-remove-lowly-expressed-genes&#34;&gt;Why remove lowly expressed genes?&lt;/h4&gt;
+
+&lt;p&gt;Capturing RNA from single cells is a noisy process. The first round of reverse transcription is done in the presence of cell lysate. This results in capture of only 10-40% of the mRNA molecules in a cell leading to a phenomenon called dropout where some lowly expressed genes are not detected in cells in which they are expressed [&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR13&#34; target=&#34;_blank&#34;&gt;1&lt;/a&gt;, &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR44&#34; target=&#34;_blank&#34;&gt;2&lt;/a&gt;, &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR64&#34; target=&#34;_blank&#34;&gt;3&lt;/a&gt;, &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR65&#34; target=&#34;_blank&#34;&gt;4&lt;/a&gt;]. As a result, some genes are so lowly expressed (or expressed not at all) that we do not have sufficient observations of that gene to make any inferences on its expression.&lt;/p&gt;
+
+&lt;p&gt;Lowly expressed genes that may only be represented by a handful of mRNAs may not appear in a given dataset. Others might only be present in a small number of cells. Because we lack sufficient information about these genes, we remove lowly expressed genes from the gene expression matrix during preprocessing. Typically, if a gene is detected in fewer than 5 or 10 cells, it gets removed.&lt;/p&gt;
+
+&lt;p&gt;Here, we can see that in the T cell dataset from Datlinger et al. (2017), there are many genes that are detected in very few cells.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;genes_per_cell &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sum(t_cell_data &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, axis&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+
+fig, ax &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;subplots(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, figsize&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;))
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;hist(genes_per_cell, bins&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;)
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_xlabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;# cells in which gene is expressed&amp;#39;&lt;/span&gt;)
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_ylabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;# of genes&amp;#39;&lt;/span&gt;)
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_yscale(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;symlog&amp;#39;&lt;/span&gt;)
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_title(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Gene detection across cells&amp;#39;&lt;/span&gt;)
+fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/gene_detection.png&#34; alt=&#34;gene_detection&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here, around 16,000/35,000 genes are detected in fewer than 10 cells. We can remove these columns from the gene expression matrix moving forward.&lt;/p&gt;
+
+&lt;h4 id=&#34;how-to-remove-lowly-expressed-genes-using-scprep&#34;&gt;How to remove lowly expressed genes using &lt;code&gt;scprep&lt;/code&gt;.&lt;/h4&gt;
+
+&lt;p&gt;The syntax to remove these genes is similar to filtering on library size. The scprep function is &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.filter.remove_rare_genes&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.filter.remove_rare_genes()&lt;/code&gt;&lt;/a&gt;. You can use it like this:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remove_rare_genes(data, cutoff&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, min_cells&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Another advantage of removing rare genes from our counts matrix is that it reduces the dimensions of the matrix that we&amp;rsquo;re working with. Instead of needing to do computations over a matrix that is 10,000x35,000, we are now working with one that is 10,000x16,000.&lt;/p&gt;
+
+&lt;h2 id=&#34;1-5-library-size-normalization&#34;&gt;1.5 -  Library size normalization&lt;/h2&gt;
+
+&lt;h4 id=&#34;why-library-size-normalize&#34;&gt;Why library size normalize?&lt;/h4&gt;
+
+&lt;p&gt;Now that we have our cells filtered by library size and have removed lowly expressed genes from our dataset, it&amp;rsquo;s time to normalize the data. Library size normalization is meant to align the scales of gene expression across cells that have different # of UMIs / cell. This is equivalent to comparing only the ratios of genes detected within a cell as opposed to comparing the absolute quantity of each RNA.&lt;/p&gt;
+
+&lt;p&gt;Mathematically, this process involves diving the count of each gene in each cell by the # UMIs in that cell. Optionally, one may then multiply the gene expression in all cells by a constant, such as the median # UMIs /cell in an experiment. This is purely a stylistic choice, but makes interpreting gene expression values a little easier.&lt;/p&gt;
+
+&lt;h4 id=&#34;normalizing-library-size-using-scprep&#34;&gt;Normalizing library size using &lt;code&gt;scprep&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;This step is accomplished using the &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.normalize.library_size_normalize&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.normalize.library_size_normalize()&lt;/code&gt;&lt;/a&gt; function with the following syntax:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;normalize&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;library_size_normalize(data)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here, I use &lt;code&gt;data_ln&lt;/code&gt; to refer to &lt;strong&gt;data&lt;/strong&gt; that has been &lt;strong&gt;l&lt;/strong&gt;ibrary size &lt;strong&gt;n&lt;/strong&gt;ormalized.&lt;/p&gt;
+
+&lt;h2 id=&#34;1-6-removing-cells-with-high-mitochondrial-gene-expression&#34;&gt;1.6 - Removing cells with high mitochondrial gene expression&lt;/h2&gt;
+
+&lt;h4 id=&#34;what-does-high-mitochondrial-gene-expression-indicate&#34;&gt;What does high mitochondrial gene expression indicate?&lt;/h4&gt;
+
+&lt;p&gt;Generally, we assume that cells with high detection of mitochondrial RNAs have undergone degradation of the mitochondrial membrane as a result of apoptosis. This may be from stress during dissociation, culture, or really anywhere in the experimental pipeline. As with the high and low library size cells, we want to remove the long tail from the distribution. In a successful experiment, it&amp;rsquo;s typical for 5-10% of the cells to have this apoptotic signature.&lt;/p&gt;
+
+&lt;h4 id=&#34;plotting-mitochondrial-expression&#34;&gt;Plotting mitochondrial expression&lt;/h4&gt;
+
+&lt;p&gt;Let&amp;rsquo;s look at the mitochondrial expression from Datlinger &lt;em&gt;et al.&lt;/em&gt; (2017). Here, the dashed line is the 95th percentile of mitochondrial expression.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# get mitochondrial genes&lt;/span&gt;
+mitochondrial_gene_list &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;array([g&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;startswith(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;MT-&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; g &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; data_ln&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;columns])
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# get expression&lt;/span&gt;
+mito_exp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; data_ln&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;loc[:,mitochondrial_gene_list]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;mean(axis&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# plotting&lt;/span&gt;
+fig, ax &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;subplots(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, figsize&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;))
+
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;hist(mito_exp, bins&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;)
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;axvline(np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;percentile(mito_exp, &lt;span style=&#34;color:#ae81ff&#34;&gt;95&lt;/span&gt;))
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_xlabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Mean mitochondrial expression&amp;#39;&lt;/span&gt;)
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_ylabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;# of cells&amp;#39;&lt;/span&gt;)
+ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_title(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Mitochondrial expression&amp;#39;&lt;/span&gt;)
+
+fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/mito_expression.png&#34; alt=&#34;mito_expression&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;removing-cells-with-high-mitochondrial-expression-using-scprep&#34;&gt;Removing cells with high mitochondrial expression using &lt;code&gt;scprep&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;Each genome and species will have its own list of mitochondrial genes and associated symbols. In human and mouse, these genes start with &amp;lsquo;MT-&amp;rsquo;. However, as there&amp;rsquo;s no standard, we didn&amp;rsquo;t want to include a function for filtering mitochondrial expression directly in &lt;code&gt;scprep&lt;/code&gt;. Instead, we provide the &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.filter.filter_values&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.filter.filter_values()&lt;/code&gt;&lt;/a&gt; function. This method takes &lt;code&gt;data&lt;/code&gt; and an array &lt;code&gt;values&lt;/code&gt; and removes all cells from &lt;code&gt;data&lt;/code&gt; where &lt;code&gt;values&lt;/code&gt; is above or below the set &lt;code&gt;threshold&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Here, this would look like:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# filter cells above 95th percentile&lt;/span&gt;
+data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter_values(data_ln, mito_expression, percentile&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;95&lt;/span&gt;, keep_cells&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;below&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&#34;1-7-transforming-data&#34;&gt;1.7 - Transforming data&lt;/h2&gt;
+
+&lt;p&gt;Our final step for preprocessing is to transform the data so that it&amp;rsquo;s usable for the algorithms that we&amp;rsquo;re using later.&lt;/p&gt;
+
+&lt;p&gt;The purpose of transforming data is to make sure that each gene or feature in our counts matrix is counted equally. Because of math, if we&amp;rsquo;re doing something like calculating the &lt;a href=&#34;https://en.wikipedia.org/wiki/Euclidean_distance&#34; target=&#34;_blank&#34;&gt;Euclidean distance&lt;/a&gt; between two cells, genes that are more highly expressed (&lt;em&gt;i.e.&lt;/em&gt; have larger values) will be considered more important.&lt;/p&gt;
+
+&lt;p&gt;There are many transforms, but the two most common for scRNA-seq are the log-transform and the square-root transform. In CyTOF, the arcsinh transform is also popular. You can access all of these using &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.transform.log&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.transform.log()&lt;/code&gt;&lt;/a&gt;, &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.transform.log&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.transform.sqrt()&lt;/code&gt;&lt;/a&gt; or &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#scprep.transform.arcsinh&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.transform.arcsinh()&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;One note: the log-transform doesn&amp;rsquo;t like zeros, which are incredibly common in single cell datasets. To overcome this, people commonly add a pseudocount to their data, either 1 or a very small value called &lt;a href=&#34;https://en.wikipedia.org/wiki/Machine_epsilon&#34; target=&#34;_blank&#34;&gt;machine epsilon&lt;/a&gt;. Personally, I don&amp;rsquo;t like this because it skews the relationships between small values, which are a huge portion of single cell counts matrices.&lt;/p&gt;
+
+&lt;p&gt;Instead, we use the squareroot transform 99% of the time. The syntax couldn&amp;rsquo;t be simpler:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;data_sq &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;transform&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sqrt(data_ln)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&#34;we-re-done-preprocessing&#34;&gt;We&amp;rsquo;re done preprocessing!&lt;/h4&gt;
+
+&lt;p&gt;Congratulations, we&amp;rsquo;re ready to start visualizing!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>2. Visualizing PCA dimensions</title>
+      <link>https://dburkhardt.github.io/tutorial/visualizing_pca/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/visualizing_pca/</guid>
+      <description>
+
+&lt;p&gt;In this section, we&amp;rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&amp;rsquo;re working with. We&amp;rsquo;ll figure out things like:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If the data exists on a trajectory, clusters, or a mix of both&lt;/li&gt;
+&lt;li&gt;How many kinds of cells are likely present in a dataset&lt;/li&gt;
+&lt;li&gt;If there are batch effects between samples&lt;/li&gt;
+&lt;li&gt;If there are technical artifacts remaining after preprocessing&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We&amp;rsquo;re going to use two main tools for this analysis: PCA and PHATE. PCA is useful because it&amp;rsquo;s quick and serves as a preliminary readout of what&amp;rsquo;s going on in a sample. However, PCA has many limitations as a visualization method because it can only recover linear combinations of genes. To get a better sense of the underlying structure of our dataset, we&amp;rsquo;ll use PHATE.&lt;/p&gt;
+
+&lt;h2 id=&#34;2-0-what-is-a-visualization&#34;&gt;2.0 - What is a visualization?&lt;/h2&gt;
+
+&lt;p&gt;Before we get too deep into showing a bunch of plots, I want to spend a little time discussing visualizations. Skip ahead if you want, but I think it&amp;rsquo;s important to understand what a visualization is, and what you can or cannot get from it.&lt;/p&gt;
+
+&lt;h4 id=&#34;a-visualization-is-a-reduction-of-dimensions&#34;&gt;A visualization is a reduction of dimensions&lt;/h4&gt;
+
+&lt;p&gt;When we talk about data, we often consider the number of observations and the number of dimensions. In single cell RNA=-seq, the number of observations is the number of cells in a dataset. In other words, this is the number of rows. The number of dimensions, or number of features, is the number of genes. These are the columns in a gene expression matrix.&lt;/p&gt;
+
+&lt;p&gt;In a common experiment you might have 15,000-30,000 genes in a dataset measured across 5,000-100,000 cells. This presents a problem: How do you visually inspect such a dataset? The key is to figure out a way how to draw the relationships between points on a 2-dimensional sheet of paper, or if you add linear perspective, you can squeeze in a third dimension.&lt;/p&gt;
+
+&lt;p&gt;A visualization is simply figuring out how to go from 30,000 dimensions -&amp;gt; 2-3.&lt;/p&gt;
+
+&lt;h4 id=&#34;heatmaps-allow-you-to-look-at-all-genes-across-all-cells-simultaneously&#34;&gt;Heatmaps allow you to look at all genes across all cells simultaneously&lt;/h4&gt;
+
+&lt;p&gt;One way is to look at a heatmap. Here I&amp;rsquo;ve created a clustered heatmap from the Datlinger data using &lt;code&gt;seaborn.clustermap&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Python&#34;&gt;import seaborn as sns
+cg = sns.clustermap(t_cell_data, cmap=&#39;inferno&#39;, xticklabels=[], yticklabels=[])
+cg.ax_heatmap.set_xlabel(&#39;Genes ({})&#39;.format(t_cell_data.shape[1]))
+cg.ax_heatmap.set_ylabel(&#39;Cells ({})&#39;.format(t_cell_data.shape[0]))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_heatmap.png&#34; alt=&#34;Datlinger heatmap&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s hard to draw any conclusions from this. How close together are any two cells? How do genes covary? We get some sense of this, and we are getting to look at all genes across all cells, but this representation of the data hinders hypothesis generation.&lt;/p&gt;
+
+&lt;h4 id=&#34;biplots-show-gene-gene-relationships&#34;&gt;Biplots show gene-gene relationships&lt;/h4&gt;
+
+&lt;p&gt;Another natural presentation is the biplot, commonly used for FACS analysis. Here each axis represents the expression of one of two genes and each dot is a cell. Let&amp;rsquo;s look at a biplot for some genes from the Datlinger dataset.&lt;/p&gt;
+
+&lt;p&gt;As you can see, it&amp;rsquo;s much easier to identify gene-gene relationships, but you can see how complex a plot we get when we look at only a handful of genes. Now realize that there are 312 million pairwise combinations of genes in a 25,000 gene genome.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_pairplot.png&#34; alt=&#34;datlinger_pairplot&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We need a better solution.&lt;/p&gt;
+
+&lt;h3 id=&#34;why-can-we-reduce-dimensions&#34;&gt;Why can we reduce dimensions?&lt;/h3&gt;
+
+&lt;p&gt;In biological systems, we know that some genes are related to each other. These relationships are complex and nonlinear, but we do know that not all possible combinations of gene expression are valid.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/ambient_latent_dim.png&#34; alt=&#34;ambient_latent_dim&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;On the left, points are uniformly distributed in the ambient 3-dimensional space. On the right, the points are randomly distributed on a 1-dimensional line that rolls in on itself. If we could unroll this line on the right, we would only need one or two dimensions to visualize it.&lt;/p&gt;
+
+&lt;h4 id=&#34;how-can-we-reduce-dimensions&#34;&gt;How can we reduce dimensions?&lt;/h4&gt;
+
+&lt;p&gt;There are many, many ways to visualize data. The most common ones are PCA, t-SNE, and MDS. Each of these has their own assumptions and simplifications they use to figure out an optimal 2D representation of high-dimensional data.&lt;/p&gt;
+
+&lt;p&gt;PCA identifies linear combinations of genes such that each combination (called a Principal Component) that explains the maximum variance. t-SNE is a convex optimization algorithm that tries to minimize the divergence between the neighborhood distances of points (the distance between points that are &amp;ldquo;close&amp;rdquo;) in the low-dimensional representation and original data space.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;alert alert-warn&#34;&gt;
+  &lt;h5 id=&#34;need-intuitive-explanation-of-mds-here&#34;&gt;Need intuitive explanation of MDS here&lt;/h5&gt;
+
+&lt;/div&gt;
+
+There are thousands of dimensionality reduction algorithms out there, and it&amp;rsquo;s important to understand that the drawbacks and benefits of each.&lt;/p&gt;
+
+&lt;h2 id=&#34;2-1-visualizing-data-using-pca&#34;&gt;2.1 - Visualizing data using PCA&lt;/h2&gt;
+
+&lt;h4 id=&#34;why-pca&#34;&gt;Why PCA?&lt;/h4&gt;
+
+&lt;p&gt;I like to start out any scRNA-seq by plotting a few principal components (PCs). First of all, we generally need to do PCA before doing any interesting downstream analysis, especially anything that involves graphs or matrices (Graphs are a mathematical representations of data as nodes and edges. More on that later).&lt;/p&gt;
+
+&lt;p&gt;Doing multiplcation or inversion of matrices with 1,000+ dimensions gets very slow and takes up a lot of memory so we typically only store 100-500 PCs and use this for downstream analysis. PCA gives us a quantification of how much variance we&amp;rsquo;ve lost by removing some of the final principal components. This means we can figure out how many we need to capture 99.999% of the variance in a dataset.&lt;/p&gt;
+
+&lt;p&gt;Once we&amp;rsquo;ve calculated 100 PCs, we can just look at the first two to get a visualization.&lt;/p&gt;
+
+&lt;h4 id=&#34;pca-dimensionality-reduction-using-scprep&#34;&gt;PCA dimensionality reduction using &lt;code&gt;scprep&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;By now you should know to expect that we&amp;rsquo;ve done the leg work here. You can easily perform PCA on any dataset using &lt;a href=&#34;https://scprep.readthedocs.io/en/stable/reference.html#module-scprep.reduce&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;scprep.reduce.pca()&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;data_pcs = scprep.reduce.pca(data_sq, n_pca=100)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now this simple syntax hides some complexity, so let&amp;rsquo;s dive a little deeper. If you don&amp;rsquo;t care, you can skip ahead to the &amp;ldquo;visualizing PCA section&amp;rdquo;.&lt;/p&gt;
+
+&lt;h4 id=&#34;using-the-sklearn-pca-operator&#34;&gt;Using the &lt;code&gt;sklearn&lt;/code&gt; PCA operator&lt;/h4&gt;
+
+&lt;p&gt;Scikit-learn (&lt;code&gt;sklearn&lt;/code&gt;) is a machine learning toolkit for Python. It&amp;rsquo;s excellent. Sklearn functions are the backbone of and stylistic-inspiration of production code in the lab. There&amp;rsquo;s &lt;a href=&#34;https://arxiv.org/abs/1309.0238&#34; target=&#34;_blank&#34;&gt;an interesting paper on ArXiv&lt;/a&gt; about how sklearn is structured, and if you&amp;rsquo;re a machine learning programmer using Python, I&amp;rsquo;d recommend reading it.&lt;/p&gt;
+
+&lt;p&gt;One of &lt;code&gt;sklearn&lt;/code&gt;&amp;rsquo;s fundamental units is the estimator class.  One extremely useful estimator is the &lt;a href=&#34;https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;PCA&lt;/code&gt;&lt;/a&gt; class.&lt;/p&gt;
+
+&lt;p&gt;You can instantiate a PCA operator in one line:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from sklearn.decomposition import PCA
+pc_op = PCA()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And fitting it to data is just as easy:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;data_pcs = pc_op.fit_transform(data_sq)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we&amp;rsquo;re fitting the estimator to the data (&lt;em&gt;i.e.&lt;/em&gt; calculating the &lt;a href=&#34;https://en.wikipedia.org/wiki/Principal_component_analysis&#34; target=&#34;_blank&#34;&gt;principal component loadings&lt;/a&gt;) and then transforming it (&lt;em&gt;i.e.&lt;/em&gt; projecting each point on those components).&lt;/p&gt;
+
+&lt;p&gt;During fitting, information about the variance of each component is calculated and stores in the &lt;code&gt;pc_op&lt;/code&gt; object as the &lt;code&gt;explained_variance_&lt;/code&gt; attribute. We can inspect this using a scree plot.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;fig, ax = plt.subplots(1, figsize=(6,5))
+
+# plot explained variance as a fraction of the total explained variance
+ax.plot(pc_op.explained_variance_/pc_op.explained_variance_.sum())
+
+# mark the 100th principal component
+ax.axvline(100, c=&#39;k&#39;, linestyle=&#39;--&#39;)
+
+ax.set_xlabel(&#39;PC index&#39;)
+ax.set_ylabel(&#39;% explained variance&#39;)
+ax.set_title(&#39;Scree plot&#39;)
+
+fig.tight_layout()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_screeplot.png&#34; alt=&#34;scree_plot&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There are a few interesting things to note here. First, we see a distinct elbow point at around 50 PCs where the explained variance of each additional component drops significantly. This means that is we reduce the data to 100, 150, or 200 PCs, the marginal increase in explained variance is vanishingly smaller.&lt;/p&gt;
+
+&lt;p&gt;So is 100 a good cutoff? Let&amp;rsquo;s see how much variance is captured with this many components:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;&amp;gt;&amp;gt;&amp;gt; pc_op.explained_variance_.cumsum()[100]/pc_op.explained_variance_.sum() * 100
+20.333394141561936
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This means we&amp;rsquo;re capturing ~20% of the variance in these components. Beyond this point, we get a decreasing return in explained variance for each added component.&lt;/p&gt;
+
+&lt;h4 id=&#34;how-to-show-that-adding-components-doesn-t-increase-useful-information&#34;&gt;How to show that adding components doesn&amp;rsquo;t increase useful information&lt;/h4&gt;
+
+&lt;h2 id=&#34;2-2-visualizing-pca-for-exploratory-analysis&#34;&gt;2.2 Visualizing PCA for exploratory analysis&lt;/h2&gt;
+
+&lt;p&gt;Now, I want to show why inspecting principal components is useful as a preliminary data analysis step. First, let&amp;rsquo;s consider the T-cell data from Datlinger &lt;em&gt;et al.&lt;/em&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;fig, ax = plt.subplots(1, figsize=(5,5))
+
+ax.scatter(data_pcs[:,0], data_pcs[:,1], s=1)
+ax.set_xlabel(&#39;PC1&#39;)
+ax.set_ylabel(&#39;PC2&#39;)
+ax.set_title(&#39;T-cell - PCA&#39;)
+
+fig.tight_layout()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.nocolor.png&#34; alt=&#34;PCA no color&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here, each point here is a cells and the x and y axis represent the projection of that cell onto each principal component. Generally speaking, this PCA plot is unremarkable. There are a few outlier cells in the upper right with high PC2 loadings. Later we might want to look into what those cells, but for now its not so many that we&amp;rsquo;re very concerned about it.&lt;/p&gt;
+
+&lt;p&gt;To fully leverage the utility of PCA, let&amp;rsquo;s add a third dimension, color, to the plot. This way we can look at the distribution of library size, mitochondrial RNA, and cells from each sample.&lt;/p&gt;
+
+&lt;p&gt;First, let&amp;rsquo;s look at the conditions:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.condition.png&#34; alt=&#34;PCA - condition&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here we can see that in the first two principal components, there is a good amount of overlap between the two conditions (stimulated and unstimulated). At this point, we can&amp;rsquo;t make many conclusions about the relationship between these conditions. We see that the range of cells states between samples is similar. We also observe that PC2 is associated somewhat with the condition label. Most importantly we don&amp;rsquo;t observe a batch effect separating the two samples.&lt;/p&gt;
+
+&lt;h2 id=&#34;2-3-identifying-batch-effects-using-pca&#34;&gt;2.3 Identifying batch effects using PCA&lt;/h2&gt;
+
+&lt;p&gt;Compare the above plot to the following samples of mouse macrophage progenitors (unpublished). Here the first component visibily separates Sample 0 from Samples 1 &amp;amp; 2.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/visualization.PCA.batch_effect.png&#34; alt=&#34;PCA - batch effect&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There is some mixing, but most of the cells in Sample 0 closest neighbors in the plot are all from the same sample. Compare this to Samples 1 &amp;amp; 2 where there are many cells from each sample that have both neighbors from Sample 1 and Sample 2.&lt;/p&gt;
+
+&lt;p&gt;In this dataset, we would say that there is some kind of batch effect between Sample 0 and Samples 1 &amp;amp; 2, but not between Samples 1 &amp;amp; 2. Note: I say batch effect here, but this does not mean that the shift is purely technical. In fact in this dataset, Sample 0 and Samples 1 &amp;amp; 2 are from different days of development.&lt;/p&gt;
+
+&lt;h2 id=&#34;2-4-when-separation-doesn-t-imply-batch-effect&#34;&gt;2.4 When separation doesn&amp;rsquo;t imply batch effect&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s contrast this to a different dataset from from  &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/27565351&#34; target=&#34;_blank&#34;&gt;Shekhar, K. et al. (2018) &lt;em&gt;Comprehensive Classification of Retinal Bipolar Neurons by Single-Cell Transcriptomics.&lt;/em&gt; Cell 166, 1308-1323.e30 (2016)&lt;/a&gt;. Here, ~25,000 retinal bipolar cells were profiled using &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/26000488&#34; target=&#34;_blank&#34;&gt;the Dropseq protocol&lt;/a&gt;. I picked this dataset because it profiles many different cell types from a terminally differentiated tissue, the adult mouse retina.&lt;/p&gt;
+
+&lt;p&gt;Here, we also see multiple groups of cells, but in each cloud there is approximately equal representation of each of 6 replicates.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.samples.png&#34; alt=&#34;PCA - retinal bipolar - samples&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Rather, each cloud is associated with one or several annotated cell types from the paper.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.cell_types.png&#34; alt=&#34;PCA - retinal bipolar - cell_types&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;2-5-pca-confirms-ordering-of-samples-in-a-timecourse&#34;&gt;2.5 PCA confirms ordering of samples in a timecourse&lt;/h2&gt;
+
+&lt;p&gt;Finally, let&amp;rsquo;s consider samples from a single cell time course of human embryoid bodies (EBs) profiled in collaboration between our lab and the Ivanova laboratory at Yale. This dataset is described in the PHATE manuscript. This time course is a useful comparison to the Shekar Bipolar dataset because here we&amp;rsquo;re looking at a developing system that is also composed of many different lineages of stem, precursor, and progenitor cell types. This dataset is publicly available at &lt;a href=&#34;https://data.mendeley.com/datasets/v6n743h5ng/1&#34; target=&#34;_blank&#34;&gt;Mendeley Data&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/embryoid.PCA.timepoint.png&#34; alt=&#34;PCA - embryoid bodies - timepoints&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here we can see that the first principal component is tracking with the time of collection for each sample. The ordering of these samples matches the ordering of developmental time. This is expected and encouraging.&lt;/p&gt;
+
+&lt;h2 id=&#34;2-6-examining-the-distribution-of-library-size&#34;&gt;2.6 Examining the distribution of library size&lt;/h2&gt;
+
+&lt;p&gt;Now, let&amp;rsquo;s look at the library size.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.libsize.png&#34; alt=&#34;PCA - libsize&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This plot shows us that PC1, the linear combination of genes with the highest variance, is strongly associated with library size. If we plot just those two factors, we can see the strength of that association.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.pc1_vs_libsize.png&#34; alt=&#34;PCA - pc1 vs libsize&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This shows us that the log-library size is generating most of the variance in the dataset. This indicates that we might want to filter on library size more stringently. However, this is not highly unusual. We can keep this information in our back pockets for now, and move on.&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s look at the EB and retinal bipolar data:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/embryoid.PCA.libsize.png&#34; alt=&#34;PCA - EB libsize&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Again, we see a similar trend between PC1 and library size. However, this isn&amp;rsquo;t always the case.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.libsize.png&#34; alt=&#34;PCA - EB libsize&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this dataset we can see that there are cells in each point cloud with high library size. Now you might wonder, when can we see that there&amp;rsquo;s an issue by looking at PCs and library size?&lt;/p&gt;
+
+&lt;h2 id=&#34;2-7-when-principal-components-separate-cells-by-library-size&#34;&gt;2.7 When principal components separate cells by library size&lt;/h2&gt;
+
+&lt;p&gt;The following dataset is from a published paper comparing mutant and wild-type conditions. Inspecting the data via PCA clearly shows two populations of cells separated by PC1. Unlike the previous example of batch effect, these populations contain an equal number of cells from each sample. This leads us to refer to this artifact as a within-batch effect.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/zebrafish.PCA.libsize.png&#34; alt=&#34;PCA - zebrafish libsize&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As you can see, the distribution of library sizes in the right populations is much higher than on the left. In the next plot, I did KMeans on the first 100 PCs to extract the clusters. We&amp;rsquo;ll discuss clustering more later, but this hack worked to separate the populations so that we could look at the library size.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/zebrafish.PCA.clusters.png&#34; alt=&#34;PCA - zebrafish clusters&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now this experiment wasn&amp;rsquo;t performed in our lab or by one of our collaborators so we&amp;rsquo;re not entirely sure what&amp;rsquo;s going on here. One guess is that the cells on the left are of poor quality and have less RNA. Another is that they are from a different batch than those on the right. We&amp;rsquo;ve reached out to the original lab that created this data, and they seemed as stumped as we were.&lt;/p&gt;
+
+&lt;p&gt;At this point, you might seriously consider throwing out the cells with lower library size.&lt;/p&gt;
+
+&lt;h2 id=&#34;2-8-examining-mitochondrial-rna-expression&#34;&gt;2.8 Examining mitochondrial RNA expression&lt;/h2&gt;
+
+&lt;p&gt;I don&amp;rsquo;t want to spend too much time on this, but just as we looked at library size above, you should plot mitochondrial RNA expression on a PCA plot.&lt;/p&gt;
+
+&lt;p&gt;Generally, you want the mitochondrial expression to look something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.mito_exp.png&#34; alt=&#34;PCA - zebrafish clusters&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here, the cells with the highest mitochondrial expression are generally evenly distributed on the plot. This is a good indication that you&amp;rsquo;ve done a good job filtering mitochondrial genes.&lt;/p&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 3.3.0">
+  <meta name="generator" content="Hugo 0.53" />
+  <meta name="author" content="Lena Smith">
+
+  
+  
+  
+  
+    
+  
+  <meta name="description" content="1.0 Introducing scprep Scprep is a lightweight scRNA-seq toolkit for Python Data Scientists Most scRNA-seq toolkits are written in R, but we develop our tools in Python. Currently, Scanpy is the most popular toolkit for scRNA-seq analysis in Python. In fact, if you&rsquo;d prefer to use that, you can find most of our lab&rsquo;s analytical methods including PHATE and MAGIC in scanpy. However, scanpy has a highly structured framework for data representation and a steep learning curve that is unnescessary for users already comfortable with the suite of methods available in Pandas, Scipy, and Sklearn.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://dburkhardt.github.io/tutorial/preprocessing/">
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" crossorigin="anonymous">
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono">
+  
+
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+  
+  
+
+  
+  <link rel="alternate" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  <link rel="feed" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://dburkhardt.github.io/tutorial/preprocessing/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Krishnaswamy Lab">
+  <meta property="og:url" content="https://dburkhardt.github.io/tutorial/preprocessing/">
+  <meta property="og:title" content="1. Preprocessing | Krishnaswamy Lab">
+  <meta property="og:description" content="1.0 Introducing scprep Scprep is a lightweight scRNA-seq toolkit for Python Data Scientists Most scRNA-seq toolkits are written in R, but we develop our tools in Python. Currently, Scanpy is the most popular toolkit for scRNA-seq analysis in Python. In fact, if you&rsquo;d prefer to use that, you can find most of our lab&rsquo;s analytical methods including PHATE and MAGIC in scanpy. However, scanpy has a highly structured framework for data representation and a steep learning curve that is unnescessary for users already comfortable with the suite of methods available in Pandas, Scipy, and Sklearn."><meta property="og:image" content="https://dburkhardt.github.io/img/portrait.jpg">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-09-09T00:00:00-04:00">
+  
+  <meta property="article:modified_time" content="2018-09-09T00:00:00-04:00">
+  
+
+  
+
+  
+
+  <title>1. Preprocessing | Krishnaswamy Lab</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Krishnaswamy Lab</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#publications_selected">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tutorial/">
+            
+            <span>Tutorials</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" id="search-query" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/tutorial/">Overview</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/tutorial/introduction/">How to single cell</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/tutorial/introduction/">0. Introduction</a>
+      </li>
+      
+      <li class="active">
+        <a href="/tutorial/preprocessing/">1. Preprocessing</a>
+      </li>
+      
+      <li >
+        <a href="/tutorial/visualizing_pca/">2. Visualizing PCA dimensions</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      
+      <p class="docs-toc-title">On this page</p>
+      
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-0-introducing-scprep">1.0 Introducing <code>scprep</code></a>
+<ul>
+<li>
+<ul>
+<li><a href="#scprep-is-a-lightweight-scrna-seq-toolkit-for-python-data-scientists">Scprep is a lightweight scRNA-seq toolkit for Python Data Scientists</a></li>
+</ul></li>
+<li><a href="#installation">Installation</a></li>
+</ul></li>
+<li><a href="#1-1-using-scprep-to-load-a-10x-genomics-counts-matrix">1.1 - Using scprep to load a 10X Genomics counts matrix</a></li>
+<li><a href="#1-2-merging-batches-using-scprep-optional">1.2 -  Merging batches using <code>scprep</code> (optional)</a>
+<ul>
+<li>
+<ul>
+<li><a href="#how-to-combine-samples">How to combine samples</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#1-3-filtering-cells-by-library-size">1.3 -  Filtering cells by library size</a>
+<ul>
+<li>
+<ul>
+<li><a href="#why-we-filter-cells-by-library-size">Why we filter cells by library size</a></li>
+<li><a href="#visualing-the-library-size-distribution-using-scprep">Visualing the library size distribution using <code>scprep</code></a></li>
+<li><a href="#selecting-a-cutoff">Selecting a cutoff</a></li>
+<li><a href="#filtering-cells-by-library-size">Filtering cells by library size</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#1-4-filtering-lowly-expressed-genes">1.4 - Filtering lowly expressed genes</a>
+<ul>
+<li>
+<ul>
+<li><a href="#why-remove-lowly-expressed-genes">Why remove lowly expressed genes?</a></li>
+<li><a href="#how-to-remove-lowly-expressed-genes-using-scprep">How to remove lowly expressed genes using <code>scprep</code>.</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#1-5-library-size-normalization">1.5 -  Library size normalization</a>
+<ul>
+<li>
+<ul>
+<li><a href="#why-library-size-normalize">Why library size normalize?</a></li>
+<li><a href="#normalizing-library-size-using-scprep">Normalizing library size using <code>scprep</code></a></li>
+</ul></li>
+</ul></li>
+<li><a href="#1-6-removing-cells-with-high-mitochondrial-gene-expression">1.6 - Removing cells with high mitochondrial gene expression</a>
+<ul>
+<li>
+<ul>
+<li><a href="#what-does-high-mitochondrial-gene-expression-indicate">What does high mitochondrial gene expression indicate?</a></li>
+<li><a href="#plotting-mitochondrial-expression">Plotting mitochondrial expression</a></li>
+<li><a href="#removing-cells-with-high-mitochondrial-expression-using-scprep">Removing cells with high mitochondrial expression using <code>scprep</code></a></li>
+</ul></li>
+</ul></li>
+<li><a href="#1-7-transforming-data">1.7 - Transforming data</a>
+<ul>
+<li>
+<ul>
+<li><a href="#we-re-done-preprocessing">We&rsquo;re done preprocessing!</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+
+      <ul class="nav toc-top">
+        <li><a href="#">Back to top</a></li>
+      </ul>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">1. Preprocessing</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<h2 id="1-0-introducing-scprep">1.0 Introducing <code>scprep</code></h2>
+
+<h4 id="scprep-is-a-lightweight-scrna-seq-toolkit-for-python-data-scientists">Scprep is a lightweight scRNA-seq toolkit for Python Data Scientists</h4>
+
+<p>Most scRNA-seq toolkits are written in R, but we develop our tools in Python. Currently, <a href="https://github.com/theislab/scanpy" target="_blank">Scanpy</a> is the most popular toolkit for scRNA-seq analysis in Python. In fact, if you&rsquo;d prefer to use that, you can find most of our lab&rsquo;s analytical methods including PHATE and MAGIC in scanpy. However, scanpy has a  highly structured framework for data representation and a steep learning curve that is unnescessary for users already comfortable with the suite of methods available in <a href="https://pandas.pydata.org/" target="_blank">Pandas</a>, <a href="https://www.scipy.org/" target="_blank">Scipy</a>, and <a href="http://scikit-learn.org/stable/" target="_blank">Sklearn</a>.</p>
+
+<p>To accomodate these users (including ourselves) we developed <code>scprep</code> (<strong>s</strong>ingle <strong>c</strong>ell <strong>prep</strong>aration). <code>scprep</code> makes it easier to use the Pandas / Scipy / Sklearn ecosystem for scRNA-seq analysis. Most of <code>scprep</code> is composed of helper functions to perform tasks common to single cell data like loading counts matrices, filtering &amp; normalizing cells by library size, and calculating common statistics. The key advantage of scprep is that data can be stored in Pandas DataFrames, Numpy arrays, Scipy Sparse Matices, it is <em>just works</em>.</p>
+
+<p>For users starting out, you might find it more valuable to spend time spent getting comfortable with these tools because they can be used for analysis of all kinds of data, not just scRNA-seq. If you want to learn more, checkout the <a href="https://docs.scipy.org/doc/numpy-1.15.1/user/quickstart.html" target="_blank">Numpy Quickstart Tutorial</a>, the <a href="https://pandas.pydata.org/pandas-docs/stable/tutorials.html" target="_blank">Pandas Tutorials</a>, the <a href="https://matplotlib.org/tutorials/index.html" target="_blank">Matplotlib Tutorials</a>, and consider getting a copy of Wes McKinney&rsquo;s book <a href="http://shop.oreilly.com/product/0636920050896.do" target="_blank">Python for Data Analysis</a>. McKinney is the original author of Pandas, and I&rsquo;m glad I went through the book at the beginning of my PhD.</p>
+
+<h3 id="installation">Installation</h3>
+
+<p>From here on out, I will assume that you have Python, Numpy, Pandas, Scipy, Scikit-learn, and Matplotlib all installed.</p>
+
+<p>The <code>scprep</code> package is available on <a href="https://github.com/krishnaswamylab/scprep" target="_blank">GitHub</a> and on <a href="https://pypi.org/project/scprep/" target="_blank">PyPI</a> so the install is straightforward:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ pip install --user scprep</code></pre></div>
+
+<p>In <code>scprep</code> you&rsquo;ll find tools for loading single cell data (<code>scprep.io</code>), library size normalization (<code>scprep.normalize</code>), transforming data (<code>scprep.transform</code>), performing statistical calculations (<code>scprep.stats</code>), and many others. Check out <a href="https://scprep.readthedocs.io/" target="_blank">the screp documentation</a> for the full API.</p>
+
+<h2 id="1-1-using-scprep-to-load-a-10x-genomics-counts-matrix">1.1 - Using scprep to load a 10X Genomics counts matrix</h2>
+
+<p>Most of the labs we work with use 10X Genomics for single cell sequencing, so we&rsquo;ll use this as an example.</p>
+
+<div class="alert alert-note">
+  <p><code>scprep.io</code> also has helper functions for csv, tsv, and mtx files.</p>
+
+</div>
+
+
+<p>Say your 10X data is in <code>/home/user/data/my_sample</code>. To load your data, run:</p>
+
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> scprep
+data_uf <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(<span style="color:#e6db74">&#39;/home/user/data/my_sample/outs/filtered_gene_bc_matrices/my_genome/&#39;</span>, sparse<span style="color:#f92672">=</span>True, gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+
+<p>Here, <code>data_uf</code> is my shorthand for &lsquo;data_unfiltered&rsquo;. <code>load_10X</code> and other <code>scprep.io</code> functions return a <a href="https://pandas.pydata.org/pandas-docs/stable/sparse.html" target="_blank">Pandas <code>SparseDataFrame</code></a> by default. The <code>SparseDataFrame</code> behaves similarly to regular Pandas <code>DataFrames</code>, but take up much less memory by storing only non-zero values and their indices in memory. Note: operations are sparse matrices are slower than dense matrices. If you can afford to store the dense matrix in memory, set <code>sparse=False</code>.</p>
+
+<p>As an aside, many genome annotations (the descriptions of where genes are located on a given genome) contain non-unique gene symbols, so with <code>gene_labels=both</code> we store the gene symbol and the gene ID as <code>'ACTB (ENSG00000075624)'</code>.</p>
+
+<p>If you look at the head of your data, you should see something like this:</p>
+
+<pre><code class="language-python">data_uf.head()
+</code></pre>
+
+<p>[sparse_dataframe_head.png]</p>
+
+<p>Now, let&rsquo;s start preprocessing your data.</p>
+
+<h2 id="1-2-merging-batches-using-scprep-optional">1.2 -  Merging batches using <code>scprep</code> (optional)</h2>
+
+<p>This is the point to merge batches if you have multiple samples from the sample experiment that you want to compare. Although we&rsquo;ll talk briefly about batch effects later, we&rsquo;ll write a whole post about how to correct them at another point.</p>
+
+<h4 id="how-to-combine-samples">How to combine samples</h4>
+
+<p>Here, what we&rsquo;re doing is taking counts matrices from each sample and stacking them vertically. We&rsquo;ve implemented this in the <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.utils.combine_batches" target="_blank"><code>scprep.utils.combine_batches</code></a> function.</p>
+
+<p>For this example, I&rsquo;m going to use the Embryoid Body timecourse covered in the <a href="http://nbviewer.jupyter.org/github/KrishnaswamyLab/PHATE/blob/master/Python/tutorial/EmbryoidBody.ipynb" target="_blank">PHATE tutorial</a>.</p>
+
+<p>Two important notes:</p>
+
+<p>First, it&rsquo;s important to know exactly which rows of the data matrix correspond to which sample so that we can separate them during downstream analysis. To facilitate this, <code>combine_batches()</code> takes an list <code>batch_labels</code> that contains one label per sample and returns an array <code>sample labels</code> that contains the sample label for each row in the resulting matrix.</p>
+
+<p>Second, it&rsquo;s possible (and exceedingly common) for the same cell barcode to appear in multiple experiments. This becomes an issue when combining batches because you want each row to have a unique index. To solve this problem, we append the sample label to the cell barcode by setting <code>append_to_cell_names=True</code>. This turns cell barcode <code>AAACATACCAGAGG-1</code> from  sample <code>Day0-3</code> to <code>AAACATACCAGAGG-1_Day0-3</code></p>
+
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Loading each of 5 timepoints</span>
+T1 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T0_1A&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
+T2 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T2_3B&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
+T3 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T4_5C&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
+T4 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T6_7D&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
+T5 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T8_9E&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
+
+<span style="color:#75715e"># Concatenating data matrices</span>
+EBT_counts, sample_labels <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>combine_batches(
+    data<span style="color:#f92672">=</span>[T1, T2, T3, T4, T5],
+    batch_labels<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Day0-3&#34;</span>, <span style="color:#e6db74">&#34;Day6-9&#34;</span>, <span style="color:#e6db74">&#34;Day12-15&#34;</span>, <span style="color:#e6db74">&#34;Day18-21&#34;</span>, <span style="color:#e6db74">&#34;Day24-27&#34;</span>],
+    append_to_cell_names<span style="color:#f92672">=</span>True
+)
+
+<span style="color:#75715e"># remove objects from memory</span>
+<span style="color:#66d9ef">del</span> T1, T2, T3, T4, T5  </code></pre></td></tr></table>
+</div>
+</div>
+
+<div class="alert alert-note">
+  <p>It&rsquo;s good practice to remove the original data matrices from memory and avoid doubling the memory usage of our scripts.</p>
+
+</div>
+
+
+<h2 id="1-3-filtering-cells-by-library-size">1.3 -  Filtering cells by library size</h2>
+
+<h4 id="why-we-filter-cells-by-library-size">Why we filter cells by library size</h4>
+
+<p>In scRNA-seq the library size of a cell is the number of unique mRNA molecules detected in that cell. These unique molecules are identified using a random barcode incorporated during the first round of reverse transcription. This barcode is called a <strong>U</strong>nique <strong>M</strong>olecule <strong>I</strong>ndicator, and often we refer to the number unique mRNAs in a cell as the number of UMIs. To read more about UMIs, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5340976/" target="_blank">Smith <em>et al.</em> (2017)</a> write about how sequencing errors and PCR amplification errors lead to innaccurate quantification of UMIs/cell.</p>
+
+<p>Depending on the method of scRNA-seq, the amount of library size filtering done can vary. The 10X Genomics CellRanger tool, the DropSeq and InDrops pipelines, and the Umitools package each have their own method and cutoff for determining real cells from empty droplets. You can take these methods at face value or set some manual cutoffs based on your data.</p>
+
+<h4 id="visualing-the-library-size-distribution-using-scprep">Visualing the library size distribution using <code>scprep</code></h4>
+
+<p>There is a helper function for plotting library size from a gene expression matrix in scprep called <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.plot.plot_library_size" target="_blank"><code>scprep.plot.plot_library_size()</code></a>.</p>
+
+<p>Here we can see a typical library size for a 10X dataset from <a href="https://www.ncbi.nlm.nih.gov/pubmed/?term=28099430" target="_blank">Datlinger <em>et al.</em> (2017)</a>. In this sample we see that there is a long tail of cells that have very high library sizes.</p>
+
+<p><img src="/img/how_to_single_cell/libsize_example_normal.png" alt="libsize example 1" /></p>
+
+<h4 id="selecting-a-cutoff">Selecting a cutoff</h4>
+
+<p>Several papers describe strategies for picking a maximum and minimum threshold that can be found with a quick google search for &ldquo;library size threshold single cell RNA seq&rdquo;.</p>
+
+<p>Most of these pick an arbitrary measure such as a certain number of deviations below or above the mean or median library size. We find that spending too much time worrying about the exact threshold is inefficient.</p>
+
+<p>For the above dataset, I would remove all cells with more than 25,000 UMI / cell in fear they might represent doublets of cells. I will generally also remove all cells with fewer than 500 reads per cell.</p>
+
+<h4 id="filtering-cells-by-library-size">Filtering cells by library size</h4>
+
+<p>You can do this using <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.filter.filter_library_size" target="_blank"><code>scprep.filter.filter_library_size()</code></a>. The syntax looks like:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>filter<span style="color:#f92672">.</span>filter_library_size(data_uf, cutoff<span style="color:#f92672">=</span><span style="color:#ae81ff">25000</span>, keep_cells<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;below&#39;</span>)</code></pre></div>
+
+<p>And now when we plot the library size we see:</p>
+
+<p><img src="/img/how_to_single_cell/libsize_example_filtered.png" alt="libsize example 2" /></p>
+
+<p>Note that there are many different valid distributions of library sizes. See the following three libraries, all generated from different tissues in the zebrafish embryo. One of the libraries is from a failed experiment, and the other two are from published papers.</p>
+
+<p>Can you tell which is which?</p>
+
+<p><img src="/img/how_to_single_cell/libsize_comparison.png" alt="libsize example 3" /></p>
+
+<p>Here, Sample 1 is from <a href="https://www.ncbi.nlm.nih.gov/pubmed/29576475" target="_blank">Pandley <em>et al.</em> (2018)</a>, Sample 2 is an internal failed experiment, and Sample 3 is from <a href="https://www.ncbi.nlm.nih.gov/pubmed/29700225" target="_blank">Farrell <em>et al.</em> (2018)</a>. The low library size in Sample 2 is the giveaway with 90% of cells having fewer than 1200 UMI/cell and a mode at 325 UMI/cell. Additionally, this library generated a <strong>Low Fraction Reads in Cells</strong> alert in the Cell Ranger web summary with only 33% of reads assigned to cells. To learn more about what this means, <a href="https://community.10xgenomics.com/t5/Single-Cell-Forum/Reason-s-for-low-quot-Fraction-Reads-in-Cell-quot/td-p/5273" target="_blank">read this post in the 10X Forums.</a>.</p>
+
+<h2 id="1-4-filtering-lowly-expressed-genes">1.4 - Filtering lowly expressed genes</h2>
+
+<h4 id="why-remove-lowly-expressed-genes">Why remove lowly expressed genes?</h4>
+
+<p>Capturing RNA from single cells is a noisy process. The first round of reverse transcription is done in the presence of cell lysate. This results in capture of only 10-40% of the mRNA molecules in a cell leading to a phenomenon called dropout where some lowly expressed genes are not detected in cells in which they are expressed [<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR13" target="_blank">1</a>, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR44" target="_blank">2</a>, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR64" target="_blank">3</a>, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5561556/#CR65" target="_blank">4</a>]. As a result, some genes are so lowly expressed (or expressed not at all) that we do not have sufficient observations of that gene to make any inferences on its expression.</p>
+
+<p>Lowly expressed genes that may only be represented by a handful of mRNAs may not appear in a given dataset. Others might only be present in a small number of cells. Because we lack sufficient information about these genes, we remove lowly expressed genes from the gene expression matrix during preprocessing. Typically, if a gene is detected in fewer than 5 or 10 cells, it gets removed.</p>
+
+<p>Here, we can see that in the T cell dataset from Datlinger et al. (2017), there are many genes that are detected in very few cells.</p>
+
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">genes_per_cell <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sum(t_cell_data <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+
+fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>, figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">6</span>))
+ax<span style="color:#f92672">.</span>hist(genes_per_cell, bins<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#39;# cells in which gene is expressed&#39;</span>)
+ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#39;# of genes&#39;</span>)
+ax<span style="color:#f92672">.</span>set_yscale(<span style="color:#e6db74">&#39;symlog&#39;</span>)
+ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Gene detection across cells&#39;</span>)
+fig<span style="color:#f92672">.</span>tight_layout()</code></pre></td></tr></table>
+</div>
+</div>
+
+<p><img src="/img/how_to_single_cell/gene_detection.png" alt="gene_detection" /></p>
+
+<p>Here, around 16,000/35,000 genes are detected in fewer than 10 cells. We can remove these columns from the gene expression matrix moving forward.</p>
+
+<h4 id="how-to-remove-lowly-expressed-genes-using-scprep">How to remove lowly expressed genes using <code>scprep</code>.</h4>
+
+<p>The syntax to remove these genes is similar to filtering on library size. The scprep function is <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.filter.remove_rare_genes" target="_blank"><code>scprep.filter.remove_rare_genes()</code></a>. You can use it like this:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>filter<span style="color:#f92672">.</span>remove_rare_genes(data, cutoff<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, min_cells<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)</code></pre></div>
+
+<p>Another advantage of removing rare genes from our counts matrix is that it reduces the dimensions of the matrix that we&rsquo;re working with. Instead of needing to do computations over a matrix that is 10,000x35,000, we are now working with one that is 10,000x16,000.</p>
+
+<h2 id="1-5-library-size-normalization">1.5 -  Library size normalization</h2>
+
+<h4 id="why-library-size-normalize">Why library size normalize?</h4>
+
+<p>Now that we have our cells filtered by library size and have removed lowly expressed genes from our dataset, it&rsquo;s time to normalize the data. Library size normalization is meant to align the scales of gene expression across cells that have different # of UMIs / cell. This is equivalent to comparing only the ratios of genes detected within a cell as opposed to comparing the absolute quantity of each RNA.</p>
+
+<p>Mathematically, this process involves diving the count of each gene in each cell by the # UMIs in that cell. Optionally, one may then multiply the gene expression in all cells by a constant, such as the median # UMIs /cell in an experiment. This is purely a stylistic choice, but makes interpreting gene expression values a little easier.</p>
+
+<h4 id="normalizing-library-size-using-scprep">Normalizing library size using <code>scprep</code></h4>
+
+<p>This step is accomplished using the <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.normalize.library_size_normalize" target="_blank"><code>scprep.normalize.library_size_normalize()</code></a> function with the following syntax:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data_ln <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>normalize<span style="color:#f92672">.</span>library_size_normalize(data)</code></pre></div>
+
+<p>Here, I use <code>data_ln</code> to refer to <strong>data</strong> that has been <strong>l</strong>ibrary size <strong>n</strong>ormalized.</p>
+
+<h2 id="1-6-removing-cells-with-high-mitochondrial-gene-expression">1.6 - Removing cells with high mitochondrial gene expression</h2>
+
+<h4 id="what-does-high-mitochondrial-gene-expression-indicate">What does high mitochondrial gene expression indicate?</h4>
+
+<p>Generally, we assume that cells with high detection of mitochondrial RNAs have undergone degradation of the mitochondrial membrane as a result of apoptosis. This may be from stress during dissociation, culture, or really anywhere in the experimental pipeline. As with the high and low library size cells, we want to remove the long tail from the distribution. In a successful experiment, it&rsquo;s typical for 5-10% of the cells to have this apoptotic signature.</p>
+
+<h4 id="plotting-mitochondrial-expression">Plotting mitochondrial expression</h4>
+
+<p>Let&rsquo;s look at the mitochondrial expression from Datlinger <em>et al.</em> (2017). Here, the dashed line is the 95th percentile of mitochondrial expression.</p>
+
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># get mitochondrial genes</span>
+mitochondrial_gene_list <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([g<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">&#39;MT-&#39;</span>) <span style="color:#66d9ef">for</span> g <span style="color:#f92672">in</span> data_ln<span style="color:#f92672">.</span>columns])
+
+<span style="color:#75715e"># get expression</span>
+mito_exp <span style="color:#f92672">=</span> data_ln<span style="color:#f92672">.</span>loc[:,mitochondrial_gene_list]<span style="color:#f92672">.</span>mean(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+
+<span style="color:#75715e"># plotting</span>
+fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>, figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">5</span>))
+
+ax<span style="color:#f92672">.</span>hist(mito_exp, bins<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+ax<span style="color:#f92672">.</span>axvline(np<span style="color:#f92672">.</span>percentile(mito_exp, <span style="color:#ae81ff">95</span>))
+ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#39;Mean mitochondrial expression&#39;</span>)
+ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#39;# of cells&#39;</span>)
+ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Mitochondrial expression&#39;</span>)
+
+fig<span style="color:#f92672">.</span>tight_layout()</code></pre></td></tr></table>
+</div>
+</div>
+
+<p><img src="/img/how_to_single_cell/mito_expression.png" alt="mito_expression" /></p>
+
+<h4 id="removing-cells-with-high-mitochondrial-expression-using-scprep">Removing cells with high mitochondrial expression using <code>scprep</code></h4>
+
+<p>Each genome and species will have its own list of mitochondrial genes and associated symbols. In human and mouse, these genes start with &lsquo;MT-&rsquo;. However, as there&rsquo;s no standard, we didn&rsquo;t want to include a function for filtering mitochondrial expression directly in <code>scprep</code>. Instead, we provide the <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.filter.filter_values" target="_blank"><code>scprep.filter.filter_values()</code></a> function. This method takes <code>data</code> and an array <code>values</code> and removes all cells from <code>data</code> where <code>values</code> is above or below the set <code>threshold</code>.</p>
+
+<p>Here, this would look like:</p>
+
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># filter cells above 95th percentile</span>
+data_ln <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>filter<span style="color:#f92672">.</span>filter_values(data_ln, mito_expression, percentile<span style="color:#f92672">=</span><span style="color:#ae81ff">95</span>, keep_cells<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;below&#39;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+
+<h2 id="1-7-transforming-data">1.7 - Transforming data</h2>
+
+<p>Our final step for preprocessing is to transform the data so that it&rsquo;s usable for the algorithms that we&rsquo;re using later.</p>
+
+<p>The purpose of transforming data is to make sure that each gene or feature in our counts matrix is counted equally. Because of math, if we&rsquo;re doing something like calculating the <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">Euclidean distance</a> between two cells, genes that are more highly expressed (<em>i.e.</em> have larger values) will be considered more important.</p>
+
+<p>There are many transforms, but the two most common for scRNA-seq are the log-transform and the square-root transform. In CyTOF, the arcsinh transform is also popular. You can access all of these using <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.transform.log" target="_blank"><code>scprep.transform.log()</code></a>, <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.transform.log" target="_blank"><code>scprep.transform.sqrt()</code></a> or <a href="https://scprep.readthedocs.io/en/stable/reference.html#scprep.transform.arcsinh" target="_blank"><code>scprep.transform.arcsinh()</code></a>.</p>
+
+<p>One note: the log-transform doesn&rsquo;t like zeros, which are incredibly common in single cell datasets. To overcome this, people commonly add a pseudocount to their data, either 1 or a very small value called <a href="https://en.wikipedia.org/wiki/Machine_epsilon" target="_blank">machine epsilon</a>. Personally, I don&rsquo;t like this because it skews the relationships between small values, which are a huge portion of single cell counts matrices.</p>
+
+<p>Instead, we use the squareroot transform 99% of the time. The syntax couldn&rsquo;t be simpler:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data_sq <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>sqrt(data_ln)</code></pre></div>
+
+<h4 id="we-re-done-preprocessing">We&rsquo;re done preprocessing!</h4>
+
+<p>Congratulations, we&rsquo;re ready to start visualizing!</p>
+
+          </div>
+
+          
+
+        </div>
+
+        <div class="body-footer">
+          Last updated on Sep 9, 2018
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    &copy; 2018 &middot; 
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha256-VsEqElsCHSGmnmHXGQzvoWjWwoznFSZc6hs7ARLRacQ=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+        
+      
+
+      
+      
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="/js/academic.min.70f0041f5a24c6a675ac218c98d7ef71.js"></script>
+
+    
+
+  </body>
+</html>
+
+

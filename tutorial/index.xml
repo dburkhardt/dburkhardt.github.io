@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>How to single cell on Krishnaswamy Lab</title>
+    <link>https://dburkhardt.github.io/tutorial/</link>
+    <description>Recent content in How to single cell on Krishnaswamy Lab</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 09 Sep 2018 00:00:00 -0400</lastBuildDate>
+    
+	<atom:link href="https://dburkhardt.github.io/tutorial/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Introduction</title>
+      <link>https://dburkhardt.github.io/tutorial/introduction/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/introduction/</guid>
+      <description>As single cell RNA-sequencing experiments become more popular, we keep on hearing a few questions over and over: &amp;ldquo;How should I start analyzing my data?&amp;rdquo; &amp;ldquo;What&amp;rsquo;s the advantage of using PHATE over t-SNE?&amp;rdquo; &amp;ldquo;How should I cluster my data?&amp;rdquo; &amp;ldquo;How can I identify differentially expressed genes between these two clusters?&amp;rdquo;
+High throughput technologies are only a few years old, and there are not many (if any) standards for analyzing a dataset.</description>
+    </item>
+    
+    <item>
+      <title>1. Preprocessing</title>
+      <link>https://dburkhardt.github.io/tutorial/preprocessing/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/preprocessing/</guid>
+      <description>1.0 Introducing scprep Scprep is a lightweight scRNA-seq toolkit for Python Data Scientists Most scRNA-seq toolkits are written in R, but we develop our tools in Python. Currently, Scanpy is the most popular toolkit for scRNA-seq analysis in Python. In fact, if you&amp;rsquo;d prefer to use that, you can find most of our lab&amp;rsquo;s analytical methods including PHATE and MAGIC in scanpy. However, scanpy has a highly structured framework for data representation and a steep learning curve that is unnescessary for users already comfortable with the suite of methods available in Pandas, Scipy, and Sklearn.</description>
+    </item>
+    
+    <item>
+      <title>2. Visualizing PCA dimensions</title>
+      <link>https://dburkhardt.github.io/tutorial/visualizing_pca/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/visualizing_pca/</guid>
+      <description>In this section, we&amp;rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&amp;rsquo;re working with. We&amp;rsquo;ll figure out things like:
+ If the data exists on a trajectory, clusters, or a mix of both How many kinds of cells are likely present in a dataset If there are batch effects between samples If there are technical artifacts remaining after preprocessing  We&amp;rsquo;re going to use two main tools for this analysis: PCA and PHATE.</description>
+    </item>
+    
+  </channel>
+</rss>

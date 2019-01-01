@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 3.3.0">
+  <meta name="generator" content="Hugo 0.53" />
+  <meta name="author" content="Lena Smith">
+
+  
+  
+  
+  
+    
+  
+  <meta name="description" content="In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:
+ If the data exists on a trajectory, clusters, or a mix of both How many kinds of cells are likely present in a dataset If there are batch effects between samples If there are technical artifacts remaining after preprocessing  We&rsquo;re going to use two main tools for this analysis: PCA and PHATE.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://dburkhardt.github.io/tutorial/visualizing_pca/">
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" crossorigin="anonymous">
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono">
+  
+
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+  
+  
+
+  
+  <link rel="alternate" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  <link rel="feed" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://dburkhardt.github.io/tutorial/visualizing_pca/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Krishnaswamy Lab">
+  <meta property="og:url" content="https://dburkhardt.github.io/tutorial/visualizing_pca/">
+  <meta property="og:title" content="2. Visualizing PCA dimensions | Krishnaswamy Lab">
+  <meta property="og:description" content="In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:
+ If the data exists on a trajectory, clusters, or a mix of both How many kinds of cells are likely present in a dataset If there are batch effects between samples If there are technical artifacts remaining after preprocessing  We&rsquo;re going to use two main tools for this analysis: PCA and PHATE."><meta property="og:image" content="https://dburkhardt.github.io/img/portrait.jpg">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-09-09T00:00:00-04:00">
+  
+  <meta property="article:modified_time" content="2018-09-09T00:00:00-04:00">
+  
+
+  
+
+  
+
+  <title>2. Visualizing PCA dimensions | Krishnaswamy Lab</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Krishnaswamy Lab</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#publications_selected">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tutorial/">
+            
+            <span>Tutorials</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" id="search-query" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/tutorial/">Overview</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/tutorial/introduction/">How to single cell</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/tutorial/introduction/">0. Introduction</a>
+      </li>
+      
+      <li >
+        <a href="/tutorial/preprocessing/">1. Preprocessing</a>
+      </li>
+      
+      <li class="active">
+        <a href="/tutorial/visualizing_pca/">2. Visualizing PCA dimensions</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      
+      <p class="docs-toc-title">On this page</p>
+      
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#2-0-what-is-a-visualization">2.0 - What is a visualization?</a>
+<ul>
+<li>
+<ul>
+<li><a href="#a-visualization-is-a-reduction-of-dimensions">A visualization is a reduction of dimensions</a></li>
+<li><a href="#heatmaps-allow-you-to-look-at-all-genes-across-all-cells-simultaneously">Heatmaps allow you to look at all genes across all cells simultaneously</a></li>
+<li><a href="#biplots-show-gene-gene-relationships">Biplots show gene-gene relationships</a></li>
+</ul></li>
+<li><a href="#why-can-we-reduce-dimensions">Why can we reduce dimensions?</a>
+<ul>
+<li><a href="#how-can-we-reduce-dimensions">How can we reduce dimensions?</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#2-1-visualizing-data-using-pca">2.1 - Visualizing data using PCA</a>
+<ul>
+<li>
+<ul>
+<li><a href="#why-pca">Why PCA?</a></li>
+<li><a href="#pca-dimensionality-reduction-using-scprep">PCA dimensionality reduction using <code>scprep</code></a></li>
+<li><a href="#using-the-sklearn-pca-operator">Using the <code>sklearn</code> PCA operator</a></li>
+<li><a href="#how-to-show-that-adding-components-doesn-t-increase-useful-information">How to show that adding components doesn&rsquo;t increase useful information</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#2-2-visualizing-pca-for-exploratory-analysis">2.2 Visualizing PCA for exploratory analysis</a></li>
+<li><a href="#2-3-identifying-batch-effects-using-pca">2.3 Identifying batch effects using PCA</a></li>
+<li><a href="#2-4-when-separation-doesn-t-imply-batch-effect">2.4 When separation doesn&rsquo;t imply batch effect</a></li>
+<li><a href="#2-5-pca-confirms-ordering-of-samples-in-a-timecourse">2.5 PCA confirms ordering of samples in a timecourse</a></li>
+<li><a href="#2-6-examining-the-distribution-of-library-size">2.6 Examining the distribution of library size</a></li>
+<li><a href="#2-7-when-principal-components-separate-cells-by-library-size">2.7 When principal components separate cells by library size</a></li>
+<li><a href="#2-8-examining-mitochondrial-rna-expression">2.8 Examining mitochondrial RNA expression</a></li>
+</ul></li>
+</ul>
+</nav>
+
+      <ul class="nav toc-top">
+        <li><a href="#">Back to top</a></li>
+      </ul>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">2. Visualizing PCA dimensions</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<p>In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:</p>
+
+<ul>
+<li>If the data exists on a trajectory, clusters, or a mix of both</li>
+<li>How many kinds of cells are likely present in a dataset</li>
+<li>If there are batch effects between samples</li>
+<li>If there are technical artifacts remaining after preprocessing</li>
+</ul>
+
+<p>We&rsquo;re going to use two main tools for this analysis: PCA and PHATE. PCA is useful because it&rsquo;s quick and serves as a preliminary readout of what&rsquo;s going on in a sample. However, PCA has many limitations as a visualization method because it can only recover linear combinations of genes. To get a better sense of the underlying structure of our dataset, we&rsquo;ll use PHATE.</p>
+
+<h2 id="2-0-what-is-a-visualization">2.0 - What is a visualization?</h2>
+
+<p>Before we get too deep into showing a bunch of plots, I want to spend a little time discussing visualizations. Skip ahead if you want, but I think it&rsquo;s important to understand what a visualization is, and what you can or cannot get from it.</p>
+
+<h4 id="a-visualization-is-a-reduction-of-dimensions">A visualization is a reduction of dimensions</h4>
+
+<p>When we talk about data, we often consider the number of observations and the number of dimensions. In single cell RNA=-seq, the number of observations is the number of cells in a dataset. In other words, this is the number of rows. The number of dimensions, or number of features, is the number of genes. These are the columns in a gene expression matrix.</p>
+
+<p>In a common experiment you might have 15,000-30,000 genes in a dataset measured across 5,000-100,000 cells. This presents a problem: How do you visually inspect such a dataset? The key is to figure out a way how to draw the relationships between points on a 2-dimensional sheet of paper, or if you add linear perspective, you can squeeze in a third dimension.</p>
+
+<p>A visualization is simply figuring out how to go from 30,000 dimensions -&gt; 2-3.</p>
+
+<h4 id="heatmaps-allow-you-to-look-at-all-genes-across-all-cells-simultaneously">Heatmaps allow you to look at all genes across all cells simultaneously</h4>
+
+<p>One way is to look at a heatmap. Here I&rsquo;ve created a clustered heatmap from the Datlinger data using <code>seaborn.clustermap</code>:</p>
+
+<pre><code class="language-Python">import seaborn as sns
+cg = sns.clustermap(t_cell_data, cmap='inferno', xticklabels=[], yticklabels=[])
+cg.ax_heatmap.set_xlabel('Genes ({})'.format(t_cell_data.shape[1]))
+cg.ax_heatmap.set_ylabel('Cells ({})'.format(t_cell_data.shape[0]))
+</code></pre>
+
+<p><img src="/img/how_to_single_cell/datlinger_heatmap.png" alt="Datlinger heatmap" /></p>
+
+<p>It&rsquo;s hard to draw any conclusions from this. How close together are any two cells? How do genes covary? We get some sense of this, and we are getting to look at all genes across all cells, but this representation of the data hinders hypothesis generation.</p>
+
+<h4 id="biplots-show-gene-gene-relationships">Biplots show gene-gene relationships</h4>
+
+<p>Another natural presentation is the biplot, commonly used for FACS analysis. Here each axis represents the expression of one of two genes and each dot is a cell. Let&rsquo;s look at a biplot for some genes from the Datlinger dataset.</p>
+
+<p>As you can see, it&rsquo;s much easier to identify gene-gene relationships, but you can see how complex a plot we get when we look at only a handful of genes. Now realize that there are 312 million pairwise combinations of genes in a 25,000 gene genome.</p>
+
+<p><img src="/img/how_to_single_cell/datlinger_pairplot.png" alt="datlinger_pairplot" /></p>
+
+<p>We need a better solution.</p>
+
+<h3 id="why-can-we-reduce-dimensions">Why can we reduce dimensions?</h3>
+
+<p>In biological systems, we know that some genes are related to each other. These relationships are complex and nonlinear, but we do know that not all possible combinations of gene expression are valid.</p>
+
+<p><img src="/img/how_to_single_cell/ambient_latent_dim.png" alt="ambient_latent_dim" /></p>
+
+<p>On the left, points are uniformly distributed in the ambient 3-dimensional space. On the right, the points are randomly distributed on a 1-dimensional line that rolls in on itself. If we could unroll this line on the right, we would only need one or two dimensions to visualize it.</p>
+
+<h4 id="how-can-we-reduce-dimensions">How can we reduce dimensions?</h4>
+
+<p>There are many, many ways to visualize data. The most common ones are PCA, t-SNE, and MDS. Each of these has their own assumptions and simplifications they use to figure out an optimal 2D representation of high-dimensional data.</p>
+
+<p>PCA identifies linear combinations of genes such that each combination (called a Principal Component) that explains the maximum variance. t-SNE is a convex optimization algorithm that tries to minimize the divergence between the neighborhood distances of points (the distance between points that are &ldquo;close&rdquo;) in the low-dimensional representation and original data space.</p>
+
+<p><div class="alert alert-warn">
+  <h5 id="need-intuitive-explanation-of-mds-here">Need intuitive explanation of MDS here</h5>
+
+</div>
+
+There are thousands of dimensionality reduction algorithms out there, and it&rsquo;s important to understand that the drawbacks and benefits of each.</p>
+
+<h2 id="2-1-visualizing-data-using-pca">2.1 - Visualizing data using PCA</h2>
+
+<h4 id="why-pca">Why PCA?</h4>
+
+<p>I like to start out any scRNA-seq by plotting a few principal components (PCs). First of all, we generally need to do PCA before doing any interesting downstream analysis, especially anything that involves graphs or matrices (Graphs are a mathematical representations of data as nodes and edges. More on that later).</p>
+
+<p>Doing multiplcation or inversion of matrices with 1,000+ dimensions gets very slow and takes up a lot of memory so we typically only store 100-500 PCs and use this for downstream analysis. PCA gives us a quantification of how much variance we&rsquo;ve lost by removing some of the final principal components. This means we can figure out how many we need to capture 99.999% of the variance in a dataset.</p>
+
+<p>Once we&rsquo;ve calculated 100 PCs, we can just look at the first two to get a visualization.</p>
+
+<h4 id="pca-dimensionality-reduction-using-scprep">PCA dimensionality reduction using <code>scprep</code></h4>
+
+<p>By now you should know to expect that we&rsquo;ve done the leg work here. You can easily perform PCA on any dataset using <a href="https://scprep.readthedocs.io/en/stable/reference.html#module-scprep.reduce" target="_blank"><code>scprep.reduce.pca()</code></a>.</p>
+
+<pre><code class="language-python">data_pcs = scprep.reduce.pca(data_sq, n_pca=100)
+</code></pre>
+
+<p>Now this simple syntax hides some complexity, so let&rsquo;s dive a little deeper. If you don&rsquo;t care, you can skip ahead to the &ldquo;visualizing PCA section&rdquo;.</p>
+
+<h4 id="using-the-sklearn-pca-operator">Using the <code>sklearn</code> PCA operator</h4>
+
+<p>Scikit-learn (<code>sklearn</code>) is a machine learning toolkit for Python. It&rsquo;s excellent. Sklearn functions are the backbone of and stylistic-inspiration of production code in the lab. There&rsquo;s <a href="https://arxiv.org/abs/1309.0238" target="_blank">an interesting paper on ArXiv</a> about how sklearn is structured, and if you&rsquo;re a machine learning programmer using Python, I&rsquo;d recommend reading it.</p>
+
+<p>One of <code>sklearn</code>&rsquo;s fundamental units is the estimator class.  One extremely useful estimator is the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html" target="_blank"><code>PCA</code></a> class.</p>
+
+<p>You can instantiate a PCA operator in one line:</p>
+
+<pre><code class="language-python">from sklearn.decomposition import PCA
+pc_op = PCA()
+</code></pre>
+
+<p>And fitting it to data is just as easy:</p>
+
+<pre><code class="language-python">data_pcs = pc_op.fit_transform(data_sq)
+</code></pre>
+
+<p>Here we&rsquo;re fitting the estimator to the data (<em>i.e.</em> calculating the <a href="https://en.wikipedia.org/wiki/Principal_component_analysis" target="_blank">principal component loadings</a>) and then transforming it (<em>i.e.</em> projecting each point on those components).</p>
+
+<p>During fitting, information about the variance of each component is calculated and stores in the <code>pc_op</code> object as the <code>explained_variance_</code> attribute. We can inspect this using a scree plot.</p>
+
+<pre><code class="language-python">fig, ax = plt.subplots(1, figsize=(6,5))
+
+# plot explained variance as a fraction of the total explained variance
+ax.plot(pc_op.explained_variance_/pc_op.explained_variance_.sum())
+
+# mark the 100th principal component
+ax.axvline(100, c='k', linestyle='--')
+
+ax.set_xlabel('PC index')
+ax.set_ylabel('% explained variance')
+ax.set_title('Scree plot')
+
+fig.tight_layout()
+</code></pre>
+
+<p><img src="/img/how_to_single_cell/datlinger_screeplot.png" alt="scree_plot" /></p>
+
+<p>There are a few interesting things to note here. First, we see a distinct elbow point at around 50 PCs where the explained variance of each additional component drops significantly. This means that is we reduce the data to 100, 150, or 200 PCs, the marginal increase in explained variance is vanishingly smaller.</p>
+
+<p>So is 100 a good cutoff? Let&rsquo;s see how much variance is captured with this many components:</p>
+
+<pre><code class="language-python">&gt;&gt;&gt; pc_op.explained_variance_.cumsum()[100]/pc_op.explained_variance_.sum() * 100
+20.333394141561936
+</code></pre>
+
+<p>This means we&rsquo;re capturing ~20% of the variance in these components. Beyond this point, we get a decreasing return in explained variance for each added component.</p>
+
+<h4 id="how-to-show-that-adding-components-doesn-t-increase-useful-information">How to show that adding components doesn&rsquo;t increase useful information</h4>
+
+<h2 id="2-2-visualizing-pca-for-exploratory-analysis">2.2 Visualizing PCA for exploratory analysis</h2>
+
+<p>Now, I want to show why inspecting principal components is useful as a preliminary data analysis step. First, let&rsquo;s consider the T-cell data from Datlinger <em>et al.</em></p>
+
+<pre><code class="language-python">fig, ax = plt.subplots(1, figsize=(5,5))
+
+ax.scatter(data_pcs[:,0], data_pcs[:,1], s=1)
+ax.set_xlabel('PC1')
+ax.set_ylabel('PC2')
+ax.set_title('T-cell - PCA')
+
+fig.tight_layout()
+</code></pre>
+
+<p><img src="/img/how_to_single_cell/datlinger.PCA.nocolor.png" alt="PCA no color" /></p>
+
+<p>Here, each point here is a cells and the x and y axis represent the projection of that cell onto each principal component. Generally speaking, this PCA plot is unremarkable. There are a few outlier cells in the upper right with high PC2 loadings. Later we might want to look into what those cells, but for now its not so many that we&rsquo;re very concerned about it.</p>
+
+<p>To fully leverage the utility of PCA, let&rsquo;s add a third dimension, color, to the plot. This way we can look at the distribution of library size, mitochondrial RNA, and cells from each sample.</p>
+
+<p>First, let&rsquo;s look at the conditions:</p>
+
+<p><img src="/img/how_to_single_cell/datlinger.PCA.condition.png" alt="PCA - condition" /></p>
+
+<p>Here we can see that in the first two principal components, there is a good amount of overlap between the two conditions (stimulated and unstimulated). At this point, we can&rsquo;t make many conclusions about the relationship between these conditions. We see that the range of cells states between samples is similar. We also observe that PC2 is associated somewhat with the condition label. Most importantly we don&rsquo;t observe a batch effect separating the two samples.</p>
+
+<h2 id="2-3-identifying-batch-effects-using-pca">2.3 Identifying batch effects using PCA</h2>
+
+<p>Compare the above plot to the following samples of mouse macrophage progenitors (unpublished). Here the first component visibily separates Sample 0 from Samples 1 &amp; 2.</p>
+
+<p><img src="/img/how_to_single_cell/visualization.PCA.batch_effect.png" alt="PCA - batch effect" /></p>
+
+<p>There is some mixing, but most of the cells in Sample 0 closest neighbors in the plot are all from the same sample. Compare this to Samples 1 &amp; 2 where there are many cells from each sample that have both neighbors from Sample 1 and Sample 2.</p>
+
+<p>In this dataset, we would say that there is some kind of batch effect between Sample 0 and Samples 1 &amp; 2, but not between Samples 1 &amp; 2. Note: I say batch effect here, but this does not mean that the shift is purely technical. In fact in this dataset, Sample 0 and Samples 1 &amp; 2 are from different days of development.</p>
+
+<h2 id="2-4-when-separation-doesn-t-imply-batch-effect">2.4 When separation doesn&rsquo;t imply batch effect</h2>
+
+<p>Let&rsquo;s contrast this to a different dataset from from  <a href="https://www.ncbi.nlm.nih.gov/pubmed/27565351" target="_blank">Shekhar, K. et al. (2018) <em>Comprehensive Classification of Retinal Bipolar Neurons by Single-Cell Transcriptomics.</em> Cell 166, 1308-1323.e30 (2016)</a>. Here, ~25,000 retinal bipolar cells were profiled using <a href="https://www.ncbi.nlm.nih.gov/pubmed/26000488" target="_blank">the Dropseq protocol</a>. I picked this dataset because it profiles many different cell types from a terminally differentiated tissue, the adult mouse retina.</p>
+
+<p>Here, we also see multiple groups of cells, but in each cloud there is approximately equal representation of each of 6 replicates.</p>
+
+<p><img src="/img/how_to_single_cell/retinal_bipolar.PCA.samples.png" alt="PCA - retinal bipolar - samples" /></p>
+
+<p>Rather, each cloud is associated with one or several annotated cell types from the paper.</p>
+
+<p><img src="/img/how_to_single_cell/retinal_bipolar.PCA.cell_types.png" alt="PCA - retinal bipolar - cell_types" /></p>
+
+<h2 id="2-5-pca-confirms-ordering-of-samples-in-a-timecourse">2.5 PCA confirms ordering of samples in a timecourse</h2>
+
+<p>Finally, let&rsquo;s consider samples from a single cell time course of human embryoid bodies (EBs) profiled in collaboration between our lab and the Ivanova laboratory at Yale. This dataset is described in the PHATE manuscript. This time course is a useful comparison to the Shekar Bipolar dataset because here we&rsquo;re looking at a developing system that is also composed of many different lineages of stem, precursor, and progenitor cell types. This dataset is publicly available at <a href="https://data.mendeley.com/datasets/v6n743h5ng/1" target="_blank">Mendeley Data</a>.</p>
+
+<p><img src="/img/how_to_single_cell/embryoid.PCA.timepoint.png" alt="PCA - embryoid bodies - timepoints" /></p>
+
+<p>Here we can see that the first principal component is tracking with the time of collection for each sample. The ordering of these samples matches the ordering of developmental time. This is expected and encouraging.</p>
+
+<h2 id="2-6-examining-the-distribution-of-library-size">2.6 Examining the distribution of library size</h2>
+
+<p>Now, let&rsquo;s look at the library size.</p>
+
+<p><img src="/img/how_to_single_cell/datlinger.PCA.libsize.png" alt="PCA - libsize" /></p>
+
+<p>This plot shows us that PC1, the linear combination of genes with the highest variance, is strongly associated with library size. If we plot just those two factors, we can see the strength of that association.</p>
+
+<p><img src="/img/how_to_single_cell/datlinger.PCA.pc1_vs_libsize.png" alt="PCA - pc1 vs libsize" /></p>
+
+<p>This shows us that the log-library size is generating most of the variance in the dataset. This indicates that we might want to filter on library size more stringently. However, this is not highly unusual. We can keep this information in our back pockets for now, and move on.</p>
+
+<p>Now let&rsquo;s look at the EB and retinal bipolar data:</p>
+
+<p><img src="/img/how_to_single_cell/embryoid.PCA.libsize.png" alt="PCA - EB libsize" /></p>
+
+<p>Again, we see a similar trend between PC1 and library size. However, this isn&rsquo;t always the case.</p>
+
+<p><img src="/img/how_to_single_cell/retinal_bipolar.PCA.libsize.png" alt="PCA - EB libsize" /></p>
+
+<p>In this dataset we can see that there are cells in each point cloud with high library size. Now you might wonder, when can we see that there&rsquo;s an issue by looking at PCs and library size?</p>
+
+<h2 id="2-7-when-principal-components-separate-cells-by-library-size">2.7 When principal components separate cells by library size</h2>
+
+<p>The following dataset is from a published paper comparing mutant and wild-type conditions. Inspecting the data via PCA clearly shows two populations of cells separated by PC1. Unlike the previous example of batch effect, these populations contain an equal number of cells from each sample. This leads us to refer to this artifact as a within-batch effect.</p>
+
+<p><img src="/img/how_to_single_cell/zebrafish.PCA.libsize.png" alt="PCA - zebrafish libsize" /></p>
+
+<p>As you can see, the distribution of library sizes in the right populations is much higher than on the left. In the next plot, I did KMeans on the first 100 PCs to extract the clusters. We&rsquo;ll discuss clustering more later, but this hack worked to separate the populations so that we could look at the library size.</p>
+
+<p><img src="/img/how_to_single_cell/zebrafish.PCA.clusters.png" alt="PCA - zebrafish clusters" /></p>
+
+<p>Now this experiment wasn&rsquo;t performed in our lab or by one of our collaborators so we&rsquo;re not entirely sure what&rsquo;s going on here. One guess is that the cells on the left are of poor quality and have less RNA. Another is that they are from a different batch than those on the right. We&rsquo;ve reached out to the original lab that created this data, and they seemed as stumped as we were.</p>
+
+<p>At this point, you might seriously consider throwing out the cells with lower library size.</p>
+
+<h2 id="2-8-examining-mitochondrial-rna-expression">2.8 Examining mitochondrial RNA expression</h2>
+
+<p>I don&rsquo;t want to spend too much time on this, but just as we looked at library size above, you should plot mitochondrial RNA expression on a PCA plot.</p>
+
+<p>Generally, you want the mitochondrial expression to look something like this:</p>
+
+<p><img src="/img/how_to_single_cell/datlinger.PCA.mito_exp.png" alt="PCA - zebrafish clusters" /></p>
+
+<p>Here, the cells with the highest mitochondrial expression are generally evenly distributed on the plot. This is a good indication that you&rsquo;ve done a good job filtering mitochondrial genes.</p>
+
+          </div>
+
+          
+
+        </div>
+
+        <div class="body-footer">
+          Last updated on Sep 9, 2018
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    &copy; 2018 &middot; 
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha256-VsEqElsCHSGmnmHXGQzvoWjWwoznFSZc6hs7ARLRacQ=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+        
+      
+
+      
+      
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="/js/academic.min.70f0041f5a24c6a675ac218c98d7ef71.js"></script>
+
+    
+
+  </body>
+</html>
+
+

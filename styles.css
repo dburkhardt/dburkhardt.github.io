@@ -24,13 +24,13 @@
 
 html {
   font-family: 'Roboto', sans-serif;
-  font-size: 16px;
+  font-size: 12px;
   color: rgba(0,0,0,0.8);
   line-height: 1.65;
 }
 @media screen and (min-width: 58em) {
   html {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 
@@ -1240,7 +1240,7 @@ article .article-metadata {
 /*************************************************
  *  Accomplishments
  **************************************************/
- 
+
 .course {
   margin-bottom: -0.5rem;
 }
@@ -1596,7 +1596,7 @@ a.badge:hover {
 
 .dropdown-menu,
 nav#navbar-main li.nav-item {
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .navbar-light .navbar-nav>.nav-item>.nav-link,
@@ -2110,7 +2110,7 @@ ul.toc-top {
   display: block;
   padding: .125rem 1.5rem;
   color: #99979c;
-  font-size: 0.7rem;
+  font-size: 1rem;
 }
 
 #TableOfContents li a:hover,

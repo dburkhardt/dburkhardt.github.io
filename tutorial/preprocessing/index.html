@@ -78,6 +78,8 @@
 
   <link rel="stylesheet" href="/styles.css">
   
+  <link rel="stylesheet" href="/css/custom.css">
+  
 
   
   
@@ -412,16 +414,8 @@
 
 <p>Say your 10X data is in <code>/home/user/data/my_sample</code>. To load your data, run:</p>
 
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">2
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> scprep
-data_uf <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(<span style="color:#e6db74">&#39;/home/user/data/my_sample/outs/filtered_gene_bc_matrices/my_genome/&#39;</span>, sparse<span style="color:#f92672">=</span>True, gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> scprep
+data_uf <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(<span style="color:#e6db74">&#39;/home/user/data/my_sample/outs/filtered_gene_bc_matrices/my_genome/&#39;</span>, sparse<span style="color:#f92672">=</span>True, gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)</code></pre></div>
 
 <p>Here, <code>data_uf</code> is my shorthand for &lsquo;data_unfiltered&rsquo;. <code>load_10X</code> and other <code>scprep.io</code> functions return a <a href="https://pandas.pydata.org/pandas-docs/stable/sparse.html" target="_blank">Pandas <code>SparseDataFrame</code></a> by default. The <code>SparseDataFrame</code> behaves similarly to regular Pandas <code>DataFrames</code>, but take up much less memory by storing only non-zero values and their indices in memory. Note: operations are sparse matrices are slower than dense matrices. If you can afford to store the dense matrix in memory, set <code>sparse=False</code>.</p>
 
@@ -452,27 +446,7 @@ data_uf <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.
 
 <p>Second, it&rsquo;s possible (and exceedingly common) for the same cell barcode to appear in multiple experiments. This becomes an issue when combining batches because you want each row to have a unique index. To solve this problem, we append the sample label to the cell barcode by setting <code>append_to_cell_names=True</code>. This turns cell barcode <code>AAACATACCAGAGG-1</code> from  sample <code>Day0-3</code> to <code>AAACATACCAGAGG-1_Day0-3</code></p>
 
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">16
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Loading each of 5 timepoints</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Loading each of 5 timepoints</span>
 T1 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T0_1A&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
 T2 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T2_3B&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
 T3 <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>load_10X(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(download_path, <span style="color:#e6db74">&#34;scRNAseq&#34;</span>, <span style="color:#e6db74">&#34;T4_5C&#34;</span>), gene_labels<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;both&#39;</span>)
@@ -487,9 +461,7 @@ EBT_counts, sample_labels <span style="color:#f92672">=</span> scprep<span style
 )
 
 <span style="color:#75715e"># remove objects from memory</span>
-<span style="color:#66d9ef">del</span> T1, T2, T3, T4, T5  </code></pre></td></tr></table>
-</div>
-</div>
+<span style="color:#66d9ef">del</span> T1, T2, T3, T4, T5  </code></pre></div>
 
 <div class="alert alert-note">
   <p>It&rsquo;s good practice to remove the original data matrices from memory and avoid doubling the memory usage of our scripts.</p>
@@ -511,7 +483,15 @@ EBT_counts, sample_labels <span style="color:#f92672">=</span> scprep<span style
 
 <p>Here we can see a typical library size for a 10X dataset from <a href="https://www.ncbi.nlm.nih.gov/pubmed/?term=28099430" target="_blank">Datlinger <em>et al.</em> (2017)</a>. In this sample we see that there is a long tail of cells that have very high library sizes.</p>
 
-<p><img src="/img/how_to_single_cell/libsize_example_normal.png =100x" alt="libsize example 1" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/libsize_example_normal.png" />
+
+
+</figure>
 
 <h4 id="selecting-a-cutoff">Selecting a cutoff</h4>
 
@@ -529,13 +509,29 @@ EBT_counts, sample_labels <span style="color:#f92672">=</span> scprep<span style
 
 <p>And now when we plot the library size we see:</p>
 
-<p><img src="/img/how_to_single_cell/libsize_example_filtered.png" alt="libsize example 2" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/libsize_example_filtered.png" />
+
+
+</figure>
 
 <p>Note that there are many different valid distributions of library sizes. See the following three libraries, all generated from different tissues in the zebrafish embryo. One of the libraries is from a failed experiment, and the other two are from published papers.</p>
 
 <p>Can you tell which is which?</p>
 
-<p><img src="/img/how_to_single_cell/libsize_comparison.png" alt="libsize example 3" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/libsize_comparison.png" />
+
+
+</figure>
 
 <p>Here, Sample 1 is from <a href="https://www.ncbi.nlm.nih.gov/pubmed/29576475" target="_blank">Pandley <em>et al.</em> (2018)</a>, Sample 2 is an internal failed experiment, and Sample 3 is from <a href="https://www.ncbi.nlm.nih.gov/pubmed/29700225" target="_blank">Farrell <em>et al.</em> (2018)</a>. The low library size in Sample 2 is the giveaway with 90% of cells having fewer than 1200 UMI/cell and a mode at 325 UMI/cell. Additionally, this library generated a <strong>Low Fraction Reads in Cells</strong> alert in the Cell Ranger web summary with only 33% of reads assigned to cells. To learn more about what this means, <a href="https://community.10xgenomics.com/t5/Single-Cell-Forum/Reason-s-for-low-quot-Fraction-Reads-in-Cell-quot/td-p/5273" target="_blank">read this post in the 10X Forums.</a>.</p>
 
@@ -549,20 +545,7 @@ EBT_counts, sample_labels <span style="color:#f92672">=</span> scprep<span style
 
 <p>Here, we can see that in the T cell dataset from Datlinger et al. (2017), there are many genes that are detected in very few cells.</p>
 
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">9
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">genes_per_cell <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sum(t_cell_data <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">genes_per_cell <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sum(t_cell_data <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
 
 fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>, figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">6</span>))
 ax<span style="color:#f92672">.</span>hist(genes_per_cell, bins<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
@@ -570,11 +553,17 @@ ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#3
 ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#39;# of genes&#39;</span>)
 ax<span style="color:#f92672">.</span>set_yscale(<span style="color:#e6db74">&#39;symlog&#39;</span>)
 ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Gene detection across cells&#39;</span>)
-fig<span style="color:#f92672">.</span>tight_layout()</code></pre></td></tr></table>
-</div>
-</div>
+fig<span style="color:#f92672">.</span>tight_layout()</code></pre></div>
 
-<p><img src="/img/how_to_single_cell/gene_detection.png" alt="gene_detection" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/gene_detection.png" />
+
+
+</figure>
 
 <p>Here, around 16,000/35,000 genes are detected in fewer than 10 cells. We can remove these columns from the gene expression matrix moving forward.</p>
 
@@ -612,27 +601,7 @@ fig<span style="color:#f92672">.</span>tight_layout()</code></pre></td></tr></ta
 
 <p>Let&rsquo;s look at the mitochondrial expression from Datlinger <em>et al.</em> (2017). Here, the dashed line is the 95th percentile of mitochondrial expression.</p>
 
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">16
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># get mitochondrial genes</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># get mitochondrial genes</span>
 mitochondrial_gene_list <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([g<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">&#39;MT-&#39;</span>) <span style="color:#66d9ef">for</span> g <span style="color:#f92672">in</span> data_ln<span style="color:#f92672">.</span>columns])
 
 <span style="color:#75715e"># get expression</span>
@@ -647,11 +616,17 @@ ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#3
 ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#39;# of cells&#39;</span>)
 ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Mitochondrial expression&#39;</span>)
 
-fig<span style="color:#f92672">.</span>tight_layout()</code></pre></td></tr></table>
-</div>
-</div>
+fig<span style="color:#f92672">.</span>tight_layout()</code></pre></div>
 
-<p><img src="/img/how_to_single_cell/mito_expression.png" alt="mito_expression" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/mito_expression.png" />
+
+
+</figure>
 
 <h4 id="removing-cells-with-high-mitochondrial-expression-using-scprep">Removing cells with high mitochondrial expression using <code>scprep</code></h4>
 
@@ -659,16 +634,8 @@ fig<span style="color:#f92672">.</span>tight_layout()</code></pre></td></tr></ta
 
 <p>Here, this would look like:</p>
 
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79">2
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># filter cells above 95th percentile</span>
-data_ln <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>filter<span style="color:#f92672">.</span>filter_values(data_ln, mito_expression, percentile<span style="color:#f92672">=</span><span style="color:#ae81ff">95</span>, keep_cells<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;below&#39;</span>)</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># filter cells above 95th percentile</span>
+data_ln <span style="color:#f92672">=</span> scprep<span style="color:#f92672">.</span>filter<span style="color:#f92672">.</span>filter_values(data_ln, mito_expression, percentile<span style="color:#f92672">=</span><span style="color:#ae81ff">95</span>, keep_cells<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;below&#39;</span>)</code></pre></div>
 
 <h2 id="1-7-transforming-data">1.7 - Transforming data</h2>
 

@@ -79,6 +79,8 @@
 
   <link rel="stylesheet" href="/styles.css">
   
+  <link rel="stylesheet" href="/css/custom.css">
+  
 
   
   
@@ -381,13 +383,21 @@
 
 <p>One way is to look at a heatmap. Here I&rsquo;ve created a clustered heatmap from the Datlinger data using <code>seaborn.clustermap</code>:</p>
 
-<pre><code class="language-Python">import seaborn as sns
+<pre><code class="language-python">import seaborn as sns
 cg = sns.clustermap(t_cell_data, cmap='inferno', xticklabels=[], yticklabels=[])
 cg.ax_heatmap.set_xlabel('Genes ({})'.format(t_cell_data.shape[1]))
 cg.ax_heatmap.set_ylabel('Cells ({})'.format(t_cell_data.shape[0]))
 </code></pre>
 
-<p><img src="/img/how_to_single_cell/datlinger_heatmap.png" alt="Datlinger heatmap" /></p>
+
+
+
+<figure class="img-lg">
+
+<img src="/img/how_to_single_cell/datlinger_heatmap.png" />
+
+
+</figure>
 
 <p>It&rsquo;s hard to draw any conclusions from this. How close together are any two cells? How do genes covary? We get some sense of this, and we are getting to look at all genes across all cells, but this representation of the data hinders hypothesis generation.</p>
 
@@ -397,7 +407,15 @@ cg.ax_heatmap.set_ylabel('Cells ({})'.format(t_cell_data.shape[0]))
 
 <p>As you can see, it&rsquo;s much easier to identify gene-gene relationships, but you can see how complex a plot we get when we look at only a handful of genes. Now realize that there are 312 million pairwise combinations of genes in a 25,000 gene genome.</p>
 
-<p><img src="/img/how_to_single_cell/datlinger_pairplot.png" alt="datlinger_pairplot" /></p>
+
+
+
+<figure class="img-xl">
+
+<img src="/img/how_to_single_cell/datlinger_pairplot.png" />
+
+
+</figure>
 
 <p>We need a better solution.</p>
 
@@ -405,7 +423,15 @@ cg.ax_heatmap.set_ylabel('Cells ({})'.format(t_cell_data.shape[0]))
 
 <p>In biological systems, we know that some genes are related to each other. These relationships are complex and nonlinear, but we do know that not all possible combinations of gene expression are valid.</p>
 
-<p><img src="/img/how_to_single_cell/ambient_latent_dim.png" alt="ambient_latent_dim" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/ambient_latent_dim.png" />
+
+
+</figure>
 
 <p>On the left, points are uniformly distributed in the ambient 3-dimensional space. On the right, the points are randomly distributed on a 1-dimensional line that rolls in on itself. If we could unroll this line on the right, we would only need one or two dimensions to visualize it.</p>
 
@@ -477,7 +503,15 @@ ax.set_title('Scree plot')
 fig.tight_layout()
 </code></pre>
 
-<p><img src="/img/how_to_single_cell/datlinger_screeplot.png" alt="scree_plot" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/datlinger_screeplot.png" />
+
+
+</figure>
 
 <p>There are a few interesting things to note here. First, we see a distinct elbow point at around 50 PCs where the explained variance of each additional component drops significantly. This means that is we reduce the data to 100, 150, or 200 PCs, the marginal increase in explained variance is vanishingly smaller.</p>
 
@@ -505,7 +539,15 @@ ax.set_title('T-cell - PCA')
 fig.tight_layout()
 </code></pre>
 
-<p><img src="/img/how_to_single_cell/datlinger.PCA.nocolor.png" alt="PCA no color" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/datlinger.PCA.nocolor.png" />
+
+
+</figure>
 
 <p>Here, each point here is a cells and the x and y axis represent the projection of that cell onto each principal component. Generally speaking, this PCA plot is unremarkable. There are a few outlier cells in the upper right with high PC2 loadings. Later we might want to look into what those cells, but for now its not so many that we&rsquo;re very concerned about it.</p>
 
@@ -513,7 +555,15 @@ fig.tight_layout()
 
 <p>First, let&rsquo;s look at the conditions:</p>
 
-<p><img src="/img/how_to_single_cell/datlinger.PCA.condition.png" alt="PCA - condition" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/datlinger.PCA.condition.png" />
+
+
+</figure>
 
 <p>Here we can see that in the first two principal components, there is a good amount of overlap between the two conditions (stimulated and unstimulated). At this point, we can&rsquo;t make many conclusions about the relationship between these conditions. We see that the range of cells states between samples is similar. We also observe that PC2 is associated somewhat with the condition label. Most importantly we don&rsquo;t observe a batch effect separating the two samples.</p>
 
@@ -521,7 +571,15 @@ fig.tight_layout()
 
 <p>Compare the above plot to the following samples of mouse macrophage progenitors (unpublished). Here the first component visibily separates Sample 0 from Samples 1 &amp; 2.</p>
 
-<p><img src="/img/how_to_single_cell/visualization.PCA.batch_effect.png" alt="PCA - batch effect" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/visualization.PCA.batch_effect.png" />
+
+
+</figure>
 
 <p>There is some mixing, but most of the cells in Sample 0 closest neighbors in the plot are all from the same sample. Compare this to Samples 1 &amp; 2 where there are many cells from each sample that have both neighbors from Sample 1 and Sample 2.</p>
 
@@ -533,17 +591,41 @@ fig.tight_layout()
 
 <p>Here, we also see multiple groups of cells, but in each cloud there is approximately equal representation of each of 6 replicates.</p>
 
-<p><img src="/img/how_to_single_cell/retinal_bipolar.PCA.samples.png" alt="PCA - retinal bipolar - samples" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/retinal_bipolar.PCA.samples.png" />
+
+
+</figure>
 
 <p>Rather, each cloud is associated with one or several annotated cell types from the paper.</p>
 
-<p><img src="/img/how_to_single_cell/retinal_bipolar.PCA.cell_types.png" alt="PCA - retinal bipolar - cell_types" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/retinal_bipolar.PCA.cell_types.png" />
+
+
+</figure>
 
 <h2 id="2-5-pca-confirms-ordering-of-samples-in-a-timecourse">2.5 PCA confirms ordering of samples in a timecourse</h2>
 
 <p>Finally, let&rsquo;s consider samples from a single cell time course of human embryoid bodies (EBs) profiled in collaboration between our lab and the Ivanova laboratory at Yale. This dataset is described in the PHATE manuscript. This time course is a useful comparison to the Shekar Bipolar dataset because here we&rsquo;re looking at a developing system that is also composed of many different lineages of stem, precursor, and progenitor cell types. This dataset is publicly available at <a href="https://data.mendeley.com/datasets/v6n743h5ng/1" target="_blank">Mendeley Data</a>.</p>
 
-<p><img src="/img/how_to_single_cell/embryoid.PCA.timepoint.png" alt="PCA - embryoid bodies - timepoints" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/embryoid.PCA.timepoint.png" />
+
+
+</figure>
 
 <p>Here we can see that the first principal component is tracking with the time of collection for each sample. The ordering of these samples matches the ordering of developmental time. This is expected and encouraging.</p>
 
@@ -551,21 +633,53 @@ fig.tight_layout()
 
 <p>Now, let&rsquo;s look at the library size.</p>
 
-<p><img src="/img/how_to_single_cell/datlinger.PCA.libsize.png" alt="PCA - libsize" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/datlinger.PCA.libsize.png" />
+
+
+</figure>
 
 <p>This plot shows us that PC1, the linear combination of genes with the highest variance, is strongly associated with library size. If we plot just those two factors, we can see the strength of that association.</p>
 
-<p><img src="/img/how_to_single_cell/datlinger.PCA.pc1_vs_libsize.png" alt="PCA - pc1 vs libsize" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/datlinger.PCA.pc1_vs_libsize.png" />
+
+
+</figure>
 
 <p>This shows us that the log-library size is generating most of the variance in the dataset. This indicates that we might want to filter on library size more stringently. However, this is not highly unusual. We can keep this information in our back pockets for now, and move on.</p>
 
 <p>Now let&rsquo;s look at the EB and retinal bipolar data:</p>
 
-<p><img src="/img/how_to_single_cell/embryoid.PCA.libsize.png" alt="PCA - EB libsize" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/embryoid.PCA.libsize.png" />
+
+
+</figure>
 
 <p>Again, we see a similar trend between PC1 and library size. However, this isn&rsquo;t always the case.</p>
 
-<p><img src="/img/how_to_single_cell/retinal_bipolar.PCA.libsize.png" alt="PCA - EB libsize" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/retinal_bipolar.PCA.libsize.png" />
+
+
+</figure>
 
 <p>In this dataset we can see that there are cells in each point cloud with high library size. Now you might wonder, when can we see that there&rsquo;s an issue by looking at PCs and library size?</p>
 
@@ -573,11 +687,27 @@ fig.tight_layout()
 
 <p>The following dataset is from a published paper comparing mutant and wild-type conditions. Inspecting the data via PCA clearly shows two populations of cells separated by PC1. Unlike the previous example of batch effect, these populations contain an equal number of cells from each sample. This leads us to refer to this artifact as a within-batch effect.</p>
 
-<p><img src="/img/how_to_single_cell/zebrafish.PCA.libsize.png" alt="PCA - zebrafish libsize" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/zebrafish.PCA.libsize.png" />
+
+
+</figure>
 
 <p>As you can see, the distribution of library sizes in the right populations is much higher than on the left. In the next plot, I did KMeans on the first 100 PCs to extract the clusters. We&rsquo;ll discuss clustering more later, but this hack worked to separate the populations so that we could look at the library size.</p>
 
-<p><img src="/img/how_to_single_cell/zebrafish.PCA.clusters.png" alt="PCA - zebrafish clusters" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/zebrafish.PCA.clusters.png" />
+
+
+</figure>
 
 <p>Now this experiment wasn&rsquo;t performed in our lab or by one of our collaborators so we&rsquo;re not entirely sure what&rsquo;s going on here. One guess is that the cells on the left are of poor quality and have less RNA. Another is that they are from a different batch than those on the right. We&rsquo;ve reached out to the original lab that created this data, and they seemed as stumped as we were.</p>
 
@@ -589,7 +719,15 @@ fig.tight_layout()
 
 <p>Generally, you want the mitochondrial expression to look something like this:</p>
 
-<p><img src="/img/how_to_single_cell/datlinger.PCA.mito_exp.png" alt="PCA - zebrafish clusters" /></p>
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/datlinger.PCA.mito_exp.png" />
+
+
+</figure>
 
 <p>Here, the cells with the highest mitochondrial expression are generally evenly distributed on the plot. This is a good indication that you&rsquo;ve done a good job filtering mitochondrial genes.</p>
 

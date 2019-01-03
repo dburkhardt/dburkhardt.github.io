@@ -12,3 +12,42 @@
   color: #99979c;
   font-size: 1rem;
 }
+
+pre,
+code {
+  font-size: .9rem;
+}
+
+.img-sm {
+  max-height: 300px;
+
+}
+
+.img-sm img{
+  max-height:300px
+}
+
+.img-md {
+  max-height: 400px;
+}
+
+.img-md img{
+  max-height:400px
+}
+
+
+.img-lg {
+  max-height: 500px;
+}
+
+.img-lg img{
+  max-height:500px
+}
+
+.img-xl {
+  max-height: 700px;
+}
+
+.img-xl img{
+  max-height:700px
+}

@@ -80,16 +80,8 @@
 
 &lt;p&gt;Say your 10X data is in &lt;code&gt;/home/user/data/my_sample&lt;/code&gt;. To load your data, run:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;1
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; scprep
-data_uf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;/home/user/data/my_sample/outs/filtered_gene_bc_matrices/my_genome/&amp;#39;&lt;/span&gt;, sparse&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True, gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; scprep
+data_uf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;/home/user/data/my_sample/outs/filtered_gene_bc_matrices/my_genome/&amp;#39;&lt;/span&gt;, sparse&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True, gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Here, &lt;code&gt;data_uf&lt;/code&gt; is my shorthand for &amp;lsquo;data_unfiltered&amp;rsquo;. &lt;code&gt;load_10X&lt;/code&gt; and other &lt;code&gt;scprep.io&lt;/code&gt; functions return a &lt;a href=&#34;https://pandas.pydata.org/pandas-docs/stable/sparse.html&#34; target=&#34;_blank&#34;&gt;Pandas &lt;code&gt;SparseDataFrame&lt;/code&gt;&lt;/a&gt; by default. The &lt;code&gt;SparseDataFrame&lt;/code&gt; behaves similarly to regular Pandas &lt;code&gt;DataFrames&lt;/code&gt;, but take up much less memory by storing only non-zero values and their indices in memory. Note: operations are sparse matrices are slower than dense matrices. If you can afford to store the dense matrix in memory, set &lt;code&gt;sparse=False&lt;/code&gt;.&lt;/p&gt;
 
@@ -120,27 +112,7 @@ data_uf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span 
 
 &lt;p&gt;Second, it&amp;rsquo;s possible (and exceedingly common) for the same cell barcode to appear in multiple experiments. This becomes an issue when combining batches because you want each row to have a unique index. To solve this problem, we append the sample label to the cell barcode by setting &lt;code&gt;append_to_cell_names=True&lt;/code&gt;. This turns cell barcode &lt;code&gt;AAACATACCAGAGG-1&lt;/code&gt; from  sample &lt;code&gt;Day0-3&lt;/code&gt; to &lt;code&gt;AAACATACCAGAGG-1_Day0-3&lt;/code&gt;&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 1
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 2
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 3
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 4
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 5
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 6
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 7
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 8
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 9
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;10
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;11
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;12
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;13
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;14
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;15
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;16
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Loading each of 5 timepoints&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Loading each of 5 timepoints&lt;/span&gt;
 T1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T0_1A&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
 T2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T2_3B&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
 T3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_10X(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(download_path, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scRNAseq&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;T4_5C&amp;#34;&lt;/span&gt;), gene_labels&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;both&amp;#39;&lt;/span&gt;)
@@ -155,9 +127,7 @@ EBT_counts, sample_labels &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&g
 )
 
 &lt;span style=&#34;color:#75715e&#34;&gt;# remove objects from memory&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;del&lt;/span&gt; T1, T2, T3, T4, T5  &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;del&lt;/span&gt; T1, T2, T3, T4, T5  &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;p&gt;It&amp;rsquo;s good practice to remove the original data matrices from memory and avoid doubling the memory usage of our scripts.&lt;/p&gt;
@@ -179,7 +149,15 @@ EBT_counts, sample_labels &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&g
 
 &lt;p&gt;Here we can see a typical library size for a 10X dataset from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/?term=28099430&#34; target=&#34;_blank&#34;&gt;Datlinger &lt;em&gt;et al.&lt;/em&gt; (2017)&lt;/a&gt;. In this sample we see that there is a long tail of cells that have very high library sizes.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_example_normal.png =100x&#34; alt=&#34;libsize example 1&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_example_normal.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;h4 id=&#34;selecting-a-cutoff&#34;&gt;Selecting a cutoff&lt;/h4&gt;
 
@@ -197,13 +175,29 @@ EBT_counts, sample_labels &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&g
 
 &lt;p&gt;And now when we plot the library size we see:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_example_filtered.png&#34; alt=&#34;libsize example 2&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_example_filtered.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Note that there are many different valid distributions of library sizes. See the following three libraries, all generated from different tissues in the zebrafish embryo. One of the libraries is from a failed experiment, and the other two are from published papers.&lt;/p&gt;
 
 &lt;p&gt;Can you tell which is which?&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_comparison.png&#34; alt=&#34;libsize example 3&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/libsize_comparison.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Here, Sample 1 is from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/29576475&#34; target=&#34;_blank&#34;&gt;Pandley &lt;em&gt;et al.&lt;/em&gt; (2018)&lt;/a&gt;, Sample 2 is an internal failed experiment, and Sample 3 is from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/29700225&#34; target=&#34;_blank&#34;&gt;Farrell &lt;em&gt;et al.&lt;/em&gt; (2018)&lt;/a&gt;. The low library size in Sample 2 is the giveaway with 90% of cells having fewer than 1200 UMI/cell and a mode at 325 UMI/cell. Additionally, this library generated a &lt;strong&gt;Low Fraction Reads in Cells&lt;/strong&gt; alert in the Cell Ranger web summary with only 33% of reads assigned to cells. To learn more about what this means, &lt;a href=&#34;https://community.10xgenomics.com/t5/Single-Cell-Forum/Reason-s-for-low-quot-Fraction-Reads-in-Cell-quot/td-p/5273&#34; target=&#34;_blank&#34;&gt;read this post in the 10X Forums.&lt;/a&gt;.&lt;/p&gt;
 
@@ -217,20 +211,7 @@ EBT_counts, sample_labels &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&g
 
 &lt;p&gt;Here, we can see that in the T cell dataset from Datlinger et al. (2017), there are many genes that are detected in very few cells.&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;1
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;2
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;3
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;4
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;5
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;6
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;7
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;8
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;9
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;genes_per_cell &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sum(t_cell_data &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, axis&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;genes_per_cell &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sum(t_cell_data &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, axis&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
 
 fig, ax &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;subplots(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, figsize&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;))
 ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;hist(genes_per_cell, bins&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;)
@@ -238,11 +219,17 @@ ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_xlabel(&lt;span st
 ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_ylabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;# of genes&amp;#39;&lt;/span&gt;)
 ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_yscale(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;symlog&amp;#39;&lt;/span&gt;)
 ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_title(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Gene detection across cells&amp;#39;&lt;/span&gt;)
-fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/gene_detection.png&#34; alt=&#34;gene_detection&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/gene_detection.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Here, around 16,000/35,000 genes are detected in fewer than 10 cells. We can remove these columns from the gene expression matrix moving forward.&lt;/p&gt;
 
@@ -280,27 +267,7 @@ fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/co
 
 &lt;p&gt;Let&amp;rsquo;s look at the mitochondrial expression from Datlinger &lt;em&gt;et al.&lt;/em&gt; (2017). Here, the dashed line is the 95th percentile of mitochondrial expression.&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 1
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 2
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 3
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 4
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 5
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 6
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 7
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 8
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt; 9
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;10
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;11
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;12
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;13
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;14
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;15
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;16
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# get mitochondrial genes&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# get mitochondrial genes&lt;/span&gt;
 mitochondrial_gene_list &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;array([g&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;startswith(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;MT-&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; g &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; data_ln&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;columns])
 
 &lt;span style=&#34;color:#75715e&#34;&gt;# get expression&lt;/span&gt;
@@ -315,11 +282,17 @@ ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_xlabel(&lt;span st
 ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_ylabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;# of cells&amp;#39;&lt;/span&gt;)
 ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_title(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Mitochondrial expression&amp;#39;&lt;/span&gt;)
 
-fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/mito_expression.png&#34; alt=&#34;mito_expression&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/mito_expression.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;h4 id=&#34;removing-cells-with-high-mitochondrial-expression-using-scprep&#34;&gt;Removing cells with high mitochondrial expression using &lt;code&gt;scprep&lt;/code&gt;&lt;/h4&gt;
 
@@ -327,16 +300,8 @@ fig&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tight_layout()&lt;/co
 
 &lt;p&gt;Here, this would look like:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;1
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7c7c79&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# filter cells above 95th percentile&lt;/span&gt;
-data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter_values(data_ln, mito_expression, percentile&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;95&lt;/span&gt;, keep_cells&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;below&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# filter cells above 95th percentile&lt;/span&gt;
+data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter_values(data_ln, mito_expression, percentile&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;95&lt;/span&gt;, keep_cells&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;below&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h2 id=&#34;1-7-transforming-data&#34;&gt;1.7 - Transforming data&lt;/h2&gt;
 
@@ -393,13 +358,21 @@ data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span 
 
 &lt;p&gt;One way is to look at a heatmap. Here I&amp;rsquo;ve created a clustered heatmap from the Datlinger data using &lt;code&gt;seaborn.clustermap&lt;/code&gt;:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-Python&#34;&gt;import seaborn as sns
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import seaborn as sns
 cg = sns.clustermap(t_cell_data, cmap=&#39;inferno&#39;, xticklabels=[], yticklabels=[])
 cg.ax_heatmap.set_xlabel(&#39;Genes ({})&#39;.format(t_cell_data.shape[1]))
 cg.ax_heatmap.set_ylabel(&#39;Cells ({})&#39;.format(t_cell_data.shape[0]))
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_heatmap.png&#34; alt=&#34;Datlinger heatmap&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-lg&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_heatmap.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;It&amp;rsquo;s hard to draw any conclusions from this. How close together are any two cells? How do genes covary? We get some sense of this, and we are getting to look at all genes across all cells, but this representation of the data hinders hypothesis generation.&lt;/p&gt;
 
@@ -409,7 +382,15 @@ cg.ax_heatmap.set_ylabel(&#39;Cells ({})&#39;.format(t_cell_data.shape[0]))
 
 &lt;p&gt;As you can see, it&amp;rsquo;s much easier to identify gene-gene relationships, but you can see how complex a plot we get when we look at only a handful of genes. Now realize that there are 312 million pairwise combinations of genes in a 25,000 gene genome.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_pairplot.png&#34; alt=&#34;datlinger_pairplot&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-xl&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_pairplot.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;We need a better solution.&lt;/p&gt;
 
@@ -417,7 +398,15 @@ cg.ax_heatmap.set_ylabel(&#39;Cells ({})&#39;.format(t_cell_data.shape[0]))
 
 &lt;p&gt;In biological systems, we know that some genes are related to each other. These relationships are complex and nonlinear, but we do know that not all possible combinations of gene expression are valid.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/ambient_latent_dim.png&#34; alt=&#34;ambient_latent_dim&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/ambient_latent_dim.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;On the left, points are uniformly distributed in the ambient 3-dimensional space. On the right, the points are randomly distributed on a 1-dimensional line that rolls in on itself. If we could unroll this line on the right, we would only need one or two dimensions to visualize it.&lt;/p&gt;
 
@@ -489,7 +478,15 @@ ax.set_title(&#39;Scree plot&#39;)
 fig.tight_layout()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_screeplot.png&#34; alt=&#34;scree_plot&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger_screeplot.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;There are a few interesting things to note here. First, we see a distinct elbow point at around 50 PCs where the explained variance of each additional component drops significantly. This means that is we reduce the data to 100, 150, or 200 PCs, the marginal increase in explained variance is vanishingly smaller.&lt;/p&gt;
 
@@ -517,7 +514,15 @@ ax.set_title(&#39;T-cell - PCA&#39;)
 fig.tight_layout()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.nocolor.png&#34; alt=&#34;PCA no color&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.nocolor.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Here, each point here is a cells and the x and y axis represent the projection of that cell onto each principal component. Generally speaking, this PCA plot is unremarkable. There are a few outlier cells in the upper right with high PC2 loadings. Later we might want to look into what those cells, but for now its not so many that we&amp;rsquo;re very concerned about it.&lt;/p&gt;
 
@@ -525,7 +530,15 @@ fig.tight_layout()
 
 &lt;p&gt;First, let&amp;rsquo;s look at the conditions:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.condition.png&#34; alt=&#34;PCA - condition&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.condition.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Here we can see that in the first two principal components, there is a good amount of overlap between the two conditions (stimulated and unstimulated). At this point, we can&amp;rsquo;t make many conclusions about the relationship between these conditions. We see that the range of cells states between samples is similar. We also observe that PC2 is associated somewhat with the condition label. Most importantly we don&amp;rsquo;t observe a batch effect separating the two samples.&lt;/p&gt;
 
@@ -533,7 +546,15 @@ fig.tight_layout()
 
 &lt;p&gt;Compare the above plot to the following samples of mouse macrophage progenitors (unpublished). Here the first component visibily separates Sample 0 from Samples 1 &amp;amp; 2.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/visualization.PCA.batch_effect.png&#34; alt=&#34;PCA - batch effect&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/visualization.PCA.batch_effect.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;There is some mixing, but most of the cells in Sample 0 closest neighbors in the plot are all from the same sample. Compare this to Samples 1 &amp;amp; 2 where there are many cells from each sample that have both neighbors from Sample 1 and Sample 2.&lt;/p&gt;
 
@@ -545,17 +566,41 @@ fig.tight_layout()
 
 &lt;p&gt;Here, we also see multiple groups of cells, but in each cloud there is approximately equal representation of each of 6 replicates.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.samples.png&#34; alt=&#34;PCA - retinal bipolar - samples&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.samples.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Rather, each cloud is associated with one or several annotated cell types from the paper.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.cell_types.png&#34; alt=&#34;PCA - retinal bipolar - cell_types&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.cell_types.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;h2 id=&#34;2-5-pca-confirms-ordering-of-samples-in-a-timecourse&#34;&gt;2.5 PCA confirms ordering of samples in a timecourse&lt;/h2&gt;
 
 &lt;p&gt;Finally, let&amp;rsquo;s consider samples from a single cell time course of human embryoid bodies (EBs) profiled in collaboration between our lab and the Ivanova laboratory at Yale. This dataset is described in the PHATE manuscript. This time course is a useful comparison to the Shekar Bipolar dataset because here we&amp;rsquo;re looking at a developing system that is also composed of many different lineages of stem, precursor, and progenitor cell types. This dataset is publicly available at &lt;a href=&#34;https://data.mendeley.com/datasets/v6n743h5ng/1&#34; target=&#34;_blank&#34;&gt;Mendeley Data&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/embryoid.PCA.timepoint.png&#34; alt=&#34;PCA - embryoid bodies - timepoints&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/embryoid.PCA.timepoint.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Here we can see that the first principal component is tracking with the time of collection for each sample. The ordering of these samples matches the ordering of developmental time. This is expected and encouraging.&lt;/p&gt;
 
@@ -563,21 +608,53 @@ fig.tight_layout()
 
 &lt;p&gt;Now, let&amp;rsquo;s look at the library size.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.libsize.png&#34; alt=&#34;PCA - libsize&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.libsize.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;This plot shows us that PC1, the linear combination of genes with the highest variance, is strongly associated with library size. If we plot just those two factors, we can see the strength of that association.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.pc1_vs_libsize.png&#34; alt=&#34;PCA - pc1 vs libsize&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.pc1_vs_libsize.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;This shows us that the log-library size is generating most of the variance in the dataset. This indicates that we might want to filter on library size more stringently. However, this is not highly unusual. We can keep this information in our back pockets for now, and move on.&lt;/p&gt;
 
 &lt;p&gt;Now let&amp;rsquo;s look at the EB and retinal bipolar data:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/embryoid.PCA.libsize.png&#34; alt=&#34;PCA - EB libsize&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/embryoid.PCA.libsize.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Again, we see a similar trend between PC1 and library size. However, this isn&amp;rsquo;t always the case.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.libsize.png&#34; alt=&#34;PCA - EB libsize&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/retinal_bipolar.PCA.libsize.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;In this dataset we can see that there are cells in each point cloud with high library size. Now you might wonder, when can we see that there&amp;rsquo;s an issue by looking at PCs and library size?&lt;/p&gt;
 
@@ -585,11 +662,27 @@ fig.tight_layout()
 
 &lt;p&gt;The following dataset is from a published paper comparing mutant and wild-type conditions. Inspecting the data via PCA clearly shows two populations of cells separated by PC1. Unlike the previous example of batch effect, these populations contain an equal number of cells from each sample. This leads us to refer to this artifact as a within-batch effect.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/zebrafish.PCA.libsize.png&#34; alt=&#34;PCA - zebrafish libsize&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/zebrafish.PCA.libsize.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;As you can see, the distribution of library sizes in the right populations is much higher than on the left. In the next plot, I did KMeans on the first 100 PCs to extract the clusters. We&amp;rsquo;ll discuss clustering more later, but this hack worked to separate the populations so that we could look at the library size.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/zebrafish.PCA.clusters.png&#34; alt=&#34;PCA - zebrafish clusters&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/zebrafish.PCA.clusters.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Now this experiment wasn&amp;rsquo;t performed in our lab or by one of our collaborators so we&amp;rsquo;re not entirely sure what&amp;rsquo;s going on here. One guess is that the cells on the left are of poor quality and have less RNA. Another is that they are from a different batch than those on the right. We&amp;rsquo;ve reached out to the original lab that created this data, and they seemed as stumped as we were.&lt;/p&gt;
 
@@ -601,7 +694,15 @@ fig.tight_layout()
 
 &lt;p&gt;Generally, you want the mitochondrial expression to look something like this:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.mito_exp.png&#34; alt=&#34;PCA - zebrafish clusters&#34; /&gt;&lt;/p&gt;
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/datlinger.PCA.mito_exp.png&#34; /&gt;
+
+
+&lt;/figure&gt;
 
 &lt;p&gt;Here, the cells with the highest mitochondrial expression are generally evenly distributed on the plot. This is a good indication that you&amp;rsquo;ve done a good job filtering mitochondrial genes.&lt;/p&gt;
 </description>

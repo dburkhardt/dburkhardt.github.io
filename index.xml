@@ -11,6 +11,57 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Math Sample</title>
+      <link>https://dburkhardt.github.io/post/math-sample/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dburkhardt.github.io/post/math-sample/</guid>
+      <description>&lt;p&gt;KaTeX can be used to generate complex math formulas server-side.&lt;/p&gt;
+
+&lt;p&gt;$$
+\phi = \frac{(1+\sqrt{5})}{2} = 1.6180339887\cdots
+$$&lt;/p&gt;
+
+&lt;p&gt;Additional details can be found on &lt;a href=&#34;https://github.com/Khan/KaTeX&#34; target=&#34;_blank&#34;&gt;GitHub&lt;/a&gt; or on the &lt;a href=&#34;http://tiddlywiki.com/plugins/tiddlywiki/katex/&#34; target=&#34;_blank&#34;&gt;Wiki&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;example-1&#34;&gt;Example 1&lt;/h3&gt;
+
+&lt;p&gt;If the text between $$ contains newlines it will rendered in display mode:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-markdown&#34;&gt;$$
+f(x) = \int_{-\infty}^\infty\hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi
+$$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;$$
+f(x) = \int_{-\infty}^\infty\hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi
+$$&lt;/p&gt;
+
+&lt;h3 id=&#34;example-2&#34;&gt;Example 2&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-markdown&#34;&gt;$$
+\frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }
+$$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;​​$$
+\frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }
+$$
+​​&lt;/p&gt;
+
+&lt;h3 id=&#34;example-3&#34;&gt;Example 3&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-markdown&#34;&gt;$$
+1 +  \frac{q^2}{(1-q)}+\frac{q^6}{(1-q)(1-q^2)}+\cdots = \prod_{j=0}^{\infty}\frac{1}{(1-q^{5j+2})(1-q^{5j+3})}, \quad\quad \text{for }\lvert q\rvert&amp;lt;1.
+$$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;$$
+1 +  \frac{q^2}{(1-q)}+\frac{q^6}{(1-q)(1-q^2)}+\cdots = \prod_{j=0}^{\infty}\frac{1}{(1-q^{5j+2})(1-q^{5j+3})}, \quad\quad \text{for }\lvert q\rvert&amp;lt;1.
+$$&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Introduction</title>
       <link>https://dburkhardt.github.io/tutorial/introduction/</link>
       <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
@@ -331,7 +382,7 @@ data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span 
       <guid>https://dburkhardt.github.io/tutorial/visualizing_pca/</guid>
       <description>
 
-&lt;p&gt;In this section, we&amp;rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&amp;rsquo;re working with. We&amp;rsquo;ll figure out things like:&lt;/p&gt;
+&lt;p&gt;In this section, we&amp;rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential analysis step, and will tell us a lot about the nature of the data we&amp;rsquo;re working with. We&amp;rsquo;ll figure out things like:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;If the data exists on a trajectory, clusters, or a mix of both&lt;/li&gt;
@@ -348,7 +399,7 @@ data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span 
 
 &lt;h4 id=&#34;a-visualization-is-a-reduction-of-dimensions&#34;&gt;A visualization is a reduction of dimensions&lt;/h4&gt;
 
-&lt;p&gt;When we talk about data, we often consider the number of observations and the number of dimensions. In single cell RNA=-seq, the number of observations is the number of cells in a dataset. In other words, this is the number of rows. The number of dimensions, or number of features, is the number of genes. These are the columns in a gene expression matrix.&lt;/p&gt;
+&lt;p&gt;When we talk about data, we often consider the number of observations and the number of dimensions. In single cell RNA-seq, the number of observations is the number of cells in a dataset. In other words, this is the number of rows. The number of dimensions, or number of features, is the number of genes. These are the columns in a gene expression matrix.&lt;/p&gt;
 
 &lt;p&gt;In a common experiment you might have 15,000-30,000 genes in a dataset measured across 5,000-100,000 cells. This presents a problem: How do you visually inspect such a dataset? The key is to figure out a way how to draw the relationships between points on a 2-dimensional sheet of paper, or if you add linear perspective, you can squeeze in a third dimension.&lt;/p&gt;
 
@@ -416,20 +467,15 @@ cg.ax_heatmap.set_ylabel(&#39;Cells ({})&#39;.format(t_cell_data.shape[0]))
 
 &lt;p&gt;PCA identifies linear combinations of genes such that each combination (called a Principal Component) that explains the maximum variance. t-SNE is a convex optimization algorithm that tries to minimize the divergence between the neighborhood distances of points (the distance between points that are &amp;ldquo;close&amp;rdquo;) in the low-dimensional representation and original data space.&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;alert alert-warn&#34;&gt;
-  &lt;h5 id=&#34;need-intuitive-explanation-of-mds-here&#34;&gt;Need intuitive explanation of MDS here&lt;/h5&gt;
-
-&lt;/div&gt;
-
-There are thousands of dimensionality reduction algorithms out there, and it&amp;rsquo;s important to understand that the drawbacks and benefits of each.&lt;/p&gt;
+&lt;p&gt;There are thousands of dimensionality reduction algorithms out there, and it&amp;rsquo;s important to understand that the drawbacks and benefits of each.&lt;/p&gt;
 
 &lt;h2 id=&#34;2-1-visualizing-data-using-pca&#34;&gt;2.1 - Visualizing data using PCA&lt;/h2&gt;
 
 &lt;h4 id=&#34;why-pca&#34;&gt;Why PCA?&lt;/h4&gt;
 
-&lt;p&gt;I like to start out any scRNA-seq by plotting a few principal components (PCs). First of all, we generally need to do PCA before doing any interesting downstream analysis, especially anything that involves graphs or matrices (Graphs are a mathematical representations of data as nodes and edges. More on that later).&lt;/p&gt;
+&lt;p&gt;I like to start out any scRNA-seq analysis by plotting a few principal components (PCs). First of all, we generally need to do PCA before doing any interesting downstream analysis, especially anything that involves graphs or matrices. Graphs are a mathematical representations of data as nodes and edges; more on that later.&lt;/p&gt;
 
-&lt;p&gt;Doing multiplcation or inversion of matrices with 1,000+ dimensions gets very slow and takes up a lot of memory so we typically only store 100-500 PCs and use this for downstream analysis. PCA gives us a quantification of how much variance we&amp;rsquo;ve lost by removing some of the final principal components. This means we can figure out how many we need to capture 99.999% of the variance in a dataset.&lt;/p&gt;
+&lt;p&gt;Doing multiplication or inversion of matrices with 1,000+ dimensions gets very slow and takes up a lot of memory so we typically only store 100-500 PCs and use this for downstream analysis. PCA gives us a quantification of how much variance we&amp;rsquo;ve lost by removing some of the final principal components. This means we can figure out how many we need to capture 99.999% of the variance in a dataset.&lt;/p&gt;
 
 &lt;p&gt;Once we&amp;rsquo;ve calculated 100 PCs, we can just look at the first two to get a visualization.&lt;/p&gt;
 
@@ -444,7 +490,7 @@ There are thousands of dimensionality reduction algorithms out there, and it&amp
 
 &lt;h4 id=&#34;using-the-sklearn-pca-operator&#34;&gt;Using the &lt;code&gt;sklearn&lt;/code&gt; PCA operator&lt;/h4&gt;
 
-&lt;p&gt;Scikit-learn (&lt;code&gt;sklearn&lt;/code&gt;) is a machine learning toolkit for Python. It&amp;rsquo;s excellent. Sklearn functions are the backbone of and stylistic-inspiration of production code in the lab. There&amp;rsquo;s &lt;a href=&#34;https://arxiv.org/abs/1309.0238&#34; target=&#34;_blank&#34;&gt;an interesting paper on ArXiv&lt;/a&gt; about how sklearn is structured, and if you&amp;rsquo;re a machine learning programmer using Python, I&amp;rsquo;d recommend reading it.&lt;/p&gt;
+&lt;p&gt;Scikit-learn (&lt;code&gt;sklearn&lt;/code&gt;) is a machine learning toolkit for Python. It&amp;rsquo;s excellent. &lt;code&gt;sklearn&lt;/code&gt; functions are the backbone of &lt;code&gt;scprep&lt;/code&gt;, and we model our code to fit the &lt;code&gt;sklearn&lt;/code&gt; style. The developers of &lt;code&gt;sklearn&lt;/code&gt; published &lt;a href=&#34;https://arxiv.org/abs/1309.0238&#34; target=&#34;_blank&#34;&gt;an interesting paper on ArXiv&lt;/a&gt; about how their code is structured. Ιf you&amp;rsquo;re a machine learning programmer using Python, I&amp;rsquo;d recommend reading it.&lt;/p&gt;
 
 &lt;p&gt;One of &lt;code&gt;sklearn&lt;/code&gt;&amp;rsquo;s fundamental units is the estimator class.  One extremely useful estimator is the &lt;a href=&#34;https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;PCA&lt;/code&gt;&lt;/a&gt; class.&lt;/p&gt;
 
@@ -705,6 +751,250 @@ fig.tight_layout()
 &lt;/figure&gt;
 
 &lt;p&gt;Here, the cells with the highest mitochondrial expression are generally evenly distributed on the plot. This is a good indication that you&amp;rsquo;ve done a good job filtering mitochondrial genes.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>3. Visualizing data using PHATE</title>
+      <link>https://dburkhardt.github.io/tutorial/visualizing_phate/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/visualizing_phate/</guid>
+      <description>
+
+&lt;p&gt;Once you&amp;rsquo;ve inspected the principle components of your dataset, it&amp;rsquo;s time to start visualizing your data using PHATE. We&amp;rsquo;re going to demonstrate PHATE analysis on a few datasets. We will show:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How PHATE works&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;Running PHATE on several datasets&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;How to interpret a PHATE plot&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;Clustering using the diffusion potential&lt;/li&gt;
+&lt;li&gt;How to pick parameters for PHATE&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;How to troubleshoot common issues with PHATE plots&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;3-0-what-is-phate-and-why-should-you-use-it&#34;&gt;3.0 - What is PHATE and why should you use it?&lt;/h2&gt;
+
+&lt;p&gt;PHATE is a dimensionaltiy reduction developed by the Krishnaswamy lab for visualizing high-dimensional data. We use PHATE for &lt;em&gt;every&lt;/em&gt; dataset the comes through the lab: scRNA-seq, CyTOF, gut microbiome profiles, simulated data, etc. PHATE was designed to handle noisy, non-linear relationships between data points. PHATE produces a low-dimensional representation that preserves both local and global structure in a dataset so that you can make generate hypotheses from the plot about the relationships between cells present in a dataset. Although PHATE has utility for analysis of many data modalities, we will focus on the application of PHATE for scRNA-seq analysis.&lt;/p&gt;
+
+&lt;p&gt;PHATE is inspired by diffusion maps &lt;a href=&#34;https://doi.org/10.1016/j.acha.2006.04.006&#34; target=&#34;_blank&#34;&gt;(Coifman et al. (2008))&lt;/a&gt;, but include several key innovations that make it possible to generate a two or three dimensional visualization that preserves continuous relationships between cells where they exist. For a full explanation of the PHATE algorithm, please consult &lt;a href=&#34;https://doi.org/10.1101/120378&#34; target=&#34;_blank&#34;&gt;the PHATE manuscript&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;installing-phate&#34;&gt;Installing PHATE&lt;/h3&gt;
+
+&lt;p&gt;PHATE is available on PyPI, and can be installed by running the following command in a terminal:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ pip install --user phate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;PHATE is also available in &lt;code&gt;MATLAB&lt;/code&gt; and &lt;code&gt;R&lt;/code&gt;, but we&amp;rsquo;re going to focus on the Python implementation for this tutorial.&lt;/p&gt;
+
+&lt;h2 id=&#34;3-1-phate-parameters&#34;&gt;3.1 PHATE parameters&lt;/h2&gt;
+
+&lt;p&gt;As we mentioned in the previous section, PHATE is a subclass of the &lt;code&gt;sklearn.BaseEstimator&lt;/code&gt;, and it&amp;rsquo;s API matches that of the &lt;code&gt;PCA&lt;/code&gt; operator. To use PHATE, you must first instantiate a &lt;code&gt;phate.PHATE&lt;/code&gt; object, and then use &lt;code&gt;fit_transform&lt;/code&gt; to build a graph to your data and reduce the dimensionality of the data for visualization.&lt;/p&gt;
+
+&lt;p&gt;PHATE has three key parameters:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;n_components&lt;/code&gt; - sets the number of dimensions to which PHATE will reduce the input data&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;knn&lt;/code&gt; - sets the number of Nearest Neighbors to use for calculating the kernel bandwidth&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;decay&lt;/code&gt; - sets the rate of decay of the kernel tails&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I&amp;rsquo;ll introduce other parameters thoughout the tutorial, but you should also check out the full documentation on readthedocs: &lt;a href=&#34;https://phate.readthedocs.io/en/stable/&#34; target=&#34;_blank&#34;&gt;https://phate.readthedocs.io/en/stable/&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;3-2-wait-a-second-what-s-a-kernel&#34;&gt;3.2 &lt;em&gt;Wait a second, what&amp;rsquo;s a kernel?&lt;/em&gt;&lt;/h2&gt;
+
+&lt;p&gt;Now if you&amp;rsquo;ve never studied graph theory or discrete mathematics, these last two parameters might be confusing. To understand them, consider a very simple graph, the k-Nearest Neighbor (kNN) graph. Here, each cell is a node in the graph, and edges exist between a cell and it&amp;rsquo;s &lt;code&gt;k&lt;/code&gt; nearest neighbors. You can also think about this as a graph where all cells are connected, but the connections between non-neighboring cells have a &lt;em&gt;strength&lt;/em&gt; or &lt;em&gt;weight&lt;/em&gt; of 0, while the edges between neighboring cells have a weight of 1.&lt;/p&gt;
+
+&lt;p&gt;The kNN graph offers a very powerful representation for single cell data, but it also has some drawbacks. For example, consider the following graphs:&lt;/p&gt;
+
+
+
+
+&lt;figure class=&#34;img-sm&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/PHATE_graph_explanation.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;On the left, we have a kNN graph where &lt;em&gt;k&lt;/em&gt;=4. Notice that all the blue cells, regardless of their proximity to the red cell, have edges of equal weight. Also notice that the green cell in the lower right hand corner has no connection to the red cell, despite being only trivially farther away than the next closest cell. These two properties of kNN graphs, a harsh cutoff for edges and uniform edge weights, means that choice of proper &lt;code&gt;k&lt;/code&gt; is critical for any method using this graph.&lt;/p&gt;
+
+&lt;p&gt;To overcome these limitations, we use a variation of the &lt;a href=&#34;https://en.wikipedia.org/wiki/Radial_basis_function_kernel&#34; target=&#34;_blank&#34;&gt;radial basis kernel&lt;/a&gt; graph on the right. This graph connects cells with edge weights proportionally to their distance to the red cell. You can think of this kernel function as a &amp;ldquo;soft&amp;rdquo; kNN, where the weights vary smoothly between 0 and 1. Note: in practice, all cells are connected at one stage during graph instantiation, but then edges that are below a cutoff, such as &lt;code&gt;1e-4&lt;/code&gt; are set to 0.&lt;/p&gt;
+
+&lt;p&gt;Now that you understand this distinction, you can think of the &lt;code&gt;knn&lt;/code&gt; parameter as setting a baseline for finding close cells, and &lt;code&gt;decay&lt;/code&gt; as the &amp;ldquo;softness&amp;rdquo; the edge weighting.&lt;/p&gt;
+
+&lt;h2 id=&#34;3-3-instantiating-a-phate-estimator&#34;&gt;3.3  Instantiating a PHATE estimator&lt;/h2&gt;
+
+&lt;p&gt;In practice, I usually start by running PHATE on a new dataset with default parameters, which is &lt;code&gt;n_components=2&lt;/code&gt;, &lt;code&gt;knn=5&lt;/code&gt;, and &lt;code&gt;decay=40&lt;/code&gt;. Rarely, I will want to change these, but we will cover parameter tuning in a later section.&lt;/p&gt;
+
+&lt;p&gt;We can create a new &lt;code&gt;PHATE&lt;/code&gt; object just like we did with the &lt;code&gt;PCA&lt;/code&gt; class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import phate
+phate_op = phate.PHATE()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and now we can generate an embedding by calling &lt;code&gt;fit_transform&lt;/code&gt; and plot the output using &lt;code&gt;scprep.plot.scatter2d&lt;/code&gt;. Let&amp;rsquo;s start with the T cell data from Datlinger et al. (2017).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Y = phate_op.fit_transform(data_sq)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note: you can also pass in the PCA-reduced data from earlier, but PHATE can also do this for you at the cost of increased compute time.&lt;/p&gt;
+
+&lt;p&gt;You&amp;rsquo;ll see some output that looks like this, telling you that PHATE is doing stuff:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Calculating PHATE...
+  Calculating graph and diffusion operator...
+    Calculating PCA...
+    Calculated PCA in 4.20 seconds.
+    Calculating KNN search...
+    Calculated KNN search in 1.23 seconds.
+    Calculating affinities...
+    Calculated affinities in 0.18 seconds.
+  Calculated graph and diffusion operator in 6.20 seconds.
+  Calculating landmark operator...
+    Calculating SVD...
+    Calculated SVD in 0.51 seconds.
+    Calculating KMeans...
+    Calculated KMeans in 14.68 seconds.
+  Calculated landmark operator in 16.57 seconds.
+  Calculating optimal t...
+    Automatically selected t = 28
+  Calculated optimal t in 0.80 seconds.
+  Calculating diffusion potential...
+  Calculated diffusion potential in 0.45 seconds.
+  Calculating metric MDS...
+  Calculated metric MDS in 33.45 seconds.
+Calculated PHATE in 57.48 seconds.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note, these times with setting &lt;code&gt;n_jobs=16&lt;/code&gt;, you may find slower performance on a laptop or when using sparse input.&lt;/p&gt;
+
+&lt;h2 id=&#34;3-4-plotting-phate-with-a-scatter-plot&#34;&gt;3.4 Plotting PHATE with a scatter plot&lt;/h2&gt;
+
+&lt;p&gt;Now we can plot using &lt;code&gt;scatter2d&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;scprep.plot.scatter2d(Y, ticks=None, label_prefix=&#39;PHATE&#39;, figsize=(5,5))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And see the following plot:&lt;/p&gt;
+
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/PHATE.tcell.nocolor.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;From this plot, we can tell that there are several kinds of cells in the data set, but it&amp;rsquo;s hard to tell much other than that without starting to add some color. Let&amp;rsquo;s plot the condition label for each cell, the library size, and expression of a mitochonrial gene.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Plotting mitochondrial expression
+fig, ax = plt.subplots(1, figsize=(3.4,3))
+scprep.plot.scatter2d(Y, ax=ax, c=t_cell_data_ln[&#39;MT-CO1&#39;],
+                      title=&#39;MT-CO1&#39;, ticks=False, label_prefix=&#39;PHATE&#39;)
+fig.tight_layout()
+
+# Plotting libsize
+fig, ax = plt.subplots(1, figsize=(3.6,3))
+scprep.plot.scatter2d(Y, ax=ax, c=metadata[&#39;library_size&#39;],
+                      title=&#39;Library Size&#39;, ticks=False, label_prefix=&#39;PHATE&#39;)
+fig.tight_layout()
+
+# Plotting condition label
+fig, ax = plt.subplots(1, figsize=(4.4,3))
+condition_cdict = {&#39;stimulated&#39;:&#39;#1a3263&#39;,
+                   &#39;unstimulated&#39;:&#39;#f5564e&#39;}
+scprep.plot.scatter2d(Y, ax=ax, c=metadata[&#39;condition&#39;], cmap=condition_cdict,
+                      title=&#39;Condition&#39;, ticks=False, label_prefix=&#39;PHATE&#39;,
+                     legend_anchor=(1,1))
+fig.tight_layout()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And we see the following plots:&lt;/p&gt;
+
+
+
+
+&lt;figure class=&#34;img-lg&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/PHATE.tcell.colors.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;Examining these plots, we see that there are no regions enriched for high mitochondrial RNA (which would indicate apoptotic cells). Although there are some regions of the plot with higher library size than others, these cells are fairly well distributed over the plot. If we say a branch of cells shooting off the plot with very high or low library sizes, then we might want to revisit the filtering thresholds established during preprocessing.&lt;/p&gt;
+
+&lt;p&gt;Finally, when we examine the the distribution of condition labels, we see that there is a good amount of overlap between the two conditions. We&amp;rsquo;ll get to characterizing the differences between these two conditions in a later tutorial. For now, check out our method, MELD (Manifold Enhancement of Latent Dimensions) on &lt;a href=&#34;https://doi.org/10.1101/532846&#34; target=&#34;_blank&#34;&gt;BioRxiv (doi: &lt;code&gt;10.1101/532846&lt;/code&gt;)&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;3-5-plotting-phate-as-a-kde-plot&#34;&gt;3.5 Plotting PHATE as a KDE plot&lt;/h2&gt;
+
+&lt;p&gt;Scatter plots are a useful way to display data. They also have the appeal of showing you every single point in your dataset. &lt;em&gt;Or do they?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Scatter plots have one drawback, which is that data points that are overlapping in the plot get drawn on top of each other. This makes it difficult to identify where most of the data density lies. You could color your plot by a density estimate, as is commonly done in FACS analysis. However, I find that in these plots, the eye is still drawn to outliers.&lt;/p&gt;
+
+&lt;p&gt;Instead, I think it&amp;rsquo;s useful to look at a Kernel Density Estimate (KDE) plot. These plots use kernel functions (just like in the graph building process) to estimate data density in one or more dimensions.&lt;/p&gt;
+
+&lt;p&gt;In python you can make a KDE plot using the &lt;a href=&#34;https://seaborn.pydata.org/&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;seaborn&lt;/code&gt;&lt;/a&gt; package. &lt;code&gt;seaborn&lt;/code&gt; works seamlessly with &lt;code&gt;numpy&lt;/code&gt; and &lt;code&gt;pandas&lt;/code&gt; and uses &lt;code&gt;matplotlib&lt;/code&gt; as a backend. The function for drawing a KDE plot is called, unsurprisingly &lt;code&gt;kdeplot&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s generate a KDE plot of the T cell data to get an idea of how many clusters of cells are in the data.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import seaborn as sns
+
+fig, ax = plt.subplots(1, figsize=(4,4))
+sns.kdeplot(Y[:,0], Y[:,1], n_levels=100, shade=True, cmap=&#39;inferno&#39;, zorder=0, ax=ax)
+
+ax.set_xticks([])
+ax.set_yticks([])
+
+ax.set_xlabel(&#39;PHATE 1&#39;, fontsize=18)
+ax.set_ylabel(&#39;PHATE 2&#39;, fontsize=18)
+
+ax.set_title(&#39;KDE - T cells&#39;, fontsize=20)
+
+fig.tight_layout()
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/PHATE.KDE.tcell.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;Here, it&amp;rsquo;s much easier to see that there are around 5 regions of density in the data. Let&amp;rsquo;s cluster them and figure out what they are!&lt;/p&gt;
+
+&lt;h2 id=&#34;3-6-clustering-data-using-phate&#34;&gt;3.6 Clustering data using PHATE&lt;/h2&gt;
+
+&lt;p&gt;A common mode of analysis for scRNA-seq is to identify clusters of cells and characterize the transcriptional diversity of these subpopulations. There are many clustering algorithms out there, and many of them have implementations in &lt;a href=&#34;https://scikit-learn.org/stable/modules/clustering.html#clustering&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;sklearn.cluster&lt;/code&gt;&lt;/a&gt;. One of our favorite clustering algorithms is &lt;a href=&#34;https://link.springer.com/article/10.1007/s11222-007-9033-z&#34; target=&#34;_blank&#34;&gt;Spectral Clustering&lt;/a&gt;. In the PHATE package, we have developed an adaptation of this method using the PHATE diffusion potential instead of the eigenvectors of the normalized Laplacian.&lt;/p&gt;
+
+&lt;p&gt;You can call this method with &lt;code&gt;phate.cluster.kmeans&lt;/code&gt;, and use these labels to color the PHATE plot. We&amp;rsquo;ll set &lt;code&gt;k=5&lt;/code&gt; based on our examination of the KDE plot.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;clusters = phate.cluster.kmeans(phate_op, k=5)
+
+scprep.plot.scatter2d(Y, c=clusters, cmap=sns.husl_palette(5), s=1,
+                      figsize=(4.3,4), ticks=None, label_prefix=&#39;PHATE&#39;,
+                     legend_anchor=(1,1), fontsize=12, title=&#39;PHATE clusters&#39;)
+
+fig.tight_layout()
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/PHATE.tcell.clusters.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;Here, we can see that the clusters are localized on the PHATE plot, and now we can begin to characterize them. Note, I won&amp;rsquo;t claim that this is the best method for identifying clusters. In general, cluster assignments should be seen as &amp;ldquo;best guess&amp;rdquo; partitions of the data. For every clustering algorithm, you can change some parameters and increase or decrease the number of clusters identified. The best way to make sure you have &amp;ldquo;valid&amp;rdquo; clusters is to inspect each group individually, and make sure you&amp;rsquo;re happy with the resolution of the results.&lt;/p&gt;
 </description>
     </item>
     

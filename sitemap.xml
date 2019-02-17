@@ -4,6 +4,14 @@
     
     <url>
     
+      <loc>https://dburkhardt.github.io/post/math-sample/</loc>
+      <lastmod>2019-01-01T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    <url>
+    
       <loc>https://dburkhardt.github.io/tutorial/introduction/</loc>
       <lastmod>2019-01-01T00:00:00-05:00</lastmod>
     </url>
@@ -21,6 +29,14 @@
     <url>
     
       <loc>https://dburkhardt.github.io/tutorial/visualizing_pca/</loc>
+      <lastmod>2019-01-01T00:00:00-05:00</lastmod>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://dburkhardt.github.io/tutorial/visualizing_phate/</loc>
       <lastmod>2019-01-01T00:00:00-05:00</lastmod>
     </url>
     
@@ -86,6 +102,24 @@
     <url>
     
       <loc>https://dburkhardt.github.io/tags/</loc>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://dburkhardt.github.io/tags/example/</loc>
+      <lastmod>2019-01-01T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://dburkhardt.github.io/tags/math/</loc>
+      <lastmod>2019-01-01T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

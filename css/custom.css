@@ -19,12 +19,11 @@ code {
 }
 
 .img-sm {
-  max-height: 300px;
-
+  max-height: 200px;
 }
 
 .img-sm img{
-  max-height:300px
+  max-height:200px
 }
 
 .img-md {

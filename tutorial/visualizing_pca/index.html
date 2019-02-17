@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="generator" content="Source Themes Academic 3.3.0">
-  <meta name="generator" content="Hugo 0.53" />
+  <meta name="generator" content="Hugo 0.54.0" />
   <meta name="author" content="Krishnaswamy Lab">
 
   
@@ -15,7 +15,7 @@
   
     
   
-  <meta name="description" content="In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:
+  <meta name="description" content="In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential analysis step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:
  If the data exists on a trajectory, clusters, or a mix of both How many kinds of cells are likely present in a dataset If there are batch effects between samples If there are technical artifacts remaining after preprocessing  We&rsquo;re going to use two main tools for this analysis: PCA and PHATE.">
 
   
@@ -109,7 +109,7 @@
   <meta property="og:site_name" content="Krishnaswamy Lab">
   <meta property="og:url" content="https://dburkhardt.github.io/tutorial/visualizing_pca/">
   <meta property="og:title" content="2. Visualizing PCA dimensions | Krishnaswamy Lab">
-  <meta property="og:description" content="In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:
+  <meta property="og:description" content="In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential analysis step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:
  If the data exists on a trajectory, clusters, or a mix of both How many kinds of cells are likely present in a dataset If there are batch effects between samples If there are technical artifacts remaining after preprocessing  We&rsquo;re going to use two main tools for this analysis: PCA and PHATE."><meta property="og:image" content="https://dburkhardt.github.io/img/portrait.jpg">
   <meta property="og:locale" content="en-us">
   
@@ -284,6 +284,10 @@
         <a href="/tutorial/visualizing_pca/">2. Visualizing PCA dimensions</a>
       </li>
       
+      <li >
+        <a href="/tutorial/visualizing_phate/">3. Visualizing data using PHATE</a>
+      </li>
+      
     </ul>
     
 
@@ -356,7 +360,7 @@
           <div class="article-style" itemprop="articleBody">
             
 
-<p>In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:</p>
+<p>In this section, we&rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential analysis step, and will tell us a lot about the nature of the data we&rsquo;re working with. We&rsquo;ll figure out things like:</p>
 
 <ul>
 <li>If the data exists on a trajectory, clusters, or a mix of both</li>
@@ -373,7 +377,7 @@
 
 <h4 id="a-visualization-is-a-reduction-of-dimensions">A visualization is a reduction of dimensions</h4>
 
-<p>When we talk about data, we often consider the number of observations and the number of dimensions. In single cell RNA=-seq, the number of observations is the number of cells in a dataset. In other words, this is the number of rows. The number of dimensions, or number of features, is the number of genes. These are the columns in a gene expression matrix.</p>
+<p>When we talk about data, we often consider the number of observations and the number of dimensions. In single cell RNA-seq, the number of observations is the number of cells in a dataset. In other words, this is the number of rows. The number of dimensions, or number of features, is the number of genes. These are the columns in a gene expression matrix.</p>
 
 <p>In a common experiment you might have 15,000-30,000 genes in a dataset measured across 5,000-100,000 cells. This presents a problem: How do you visually inspect such a dataset? The key is to figure out a way how to draw the relationships between points on a 2-dimensional sheet of paper, or if you add linear perspective, you can squeeze in a third dimension.</p>
 
@@ -441,20 +445,15 @@ cg.ax_heatmap.set_ylabel('Cells ({})'.format(t_cell_data.shape[0]))
 
 <p>PCA identifies linear combinations of genes such that each combination (called a Principal Component) that explains the maximum variance. t-SNE is a convex optimization algorithm that tries to minimize the divergence between the neighborhood distances of points (the distance between points that are &ldquo;close&rdquo;) in the low-dimensional representation and original data space.</p>
 
-<p><div class="alert alert-warn">
-  <h5 id="need-intuitive-explanation-of-mds-here">Need intuitive explanation of MDS here</h5>
-
-</div>
-
-There are thousands of dimensionality reduction algorithms out there, and it&rsquo;s important to understand that the drawbacks and benefits of each.</p>
+<p>There are thousands of dimensionality reduction algorithms out there, and it&rsquo;s important to understand that the drawbacks and benefits of each.</p>
 
 <h2 id="2-1-visualizing-data-using-pca">2.1 - Visualizing data using PCA</h2>
 
 <h4 id="why-pca">Why PCA?</h4>
 
-<p>I like to start out any scRNA-seq by plotting a few principal components (PCs). First of all, we generally need to do PCA before doing any interesting downstream analysis, especially anything that involves graphs or matrices (Graphs are a mathematical representations of data as nodes and edges. More on that later).</p>
+<p>I like to start out any scRNA-seq analysis by plotting a few principal components (PCs). First of all, we generally need to do PCA before doing any interesting downstream analysis, especially anything that involves graphs or matrices. Graphs are a mathematical representations of data as nodes and edges; more on that later.</p>
 
-<p>Doing multiplcation or inversion of matrices with 1,000+ dimensions gets very slow and takes up a lot of memory so we typically only store 100-500 PCs and use this for downstream analysis. PCA gives us a quantification of how much variance we&rsquo;ve lost by removing some of the final principal components. This means we can figure out how many we need to capture 99.999% of the variance in a dataset.</p>
+<p>Doing multiplication or inversion of matrices with 1,000+ dimensions gets very slow and takes up a lot of memory so we typically only store 100-500 PCs and use this for downstream analysis. PCA gives us a quantification of how much variance we&rsquo;ve lost by removing some of the final principal components. This means we can figure out how many we need to capture 99.999% of the variance in a dataset.</p>
 
 <p>Once we&rsquo;ve calculated 100 PCs, we can just look at the first two to get a visualization.</p>
 
@@ -469,7 +468,7 @@ There are thousands of dimensionality reduction algorithms out there, and it&rsq
 
 <h4 id="using-the-sklearn-pca-operator">Using the <code>sklearn</code> PCA operator</h4>
 
-<p>Scikit-learn (<code>sklearn</code>) is a machine learning toolkit for Python. It&rsquo;s excellent. Sklearn functions are the backbone of and stylistic-inspiration of production code in the lab. There&rsquo;s <a href="https://arxiv.org/abs/1309.0238" target="_blank">an interesting paper on ArXiv</a> about how sklearn is structured, and if you&rsquo;re a machine learning programmer using Python, I&rsquo;d recommend reading it.</p>
+<p>Scikit-learn (<code>sklearn</code>) is a machine learning toolkit for Python. It&rsquo;s excellent. <code>sklearn</code> functions are the backbone of <code>scprep</code>, and we model our code to fit the <code>sklearn</code> style. The developers of <code>sklearn</code> published <a href="https://arxiv.org/abs/1309.0238" target="_blank">an interesting paper on ArXiv</a> about how their code is structured. Ιf you&rsquo;re a machine learning programmer using Python, I&rsquo;d recommend reading it.</p>
 
 <p>One of <code>sklearn</code>&rsquo;s fundamental units is the estimator class.  One extremely useful estimator is the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html" target="_blank"><code>PCA</code></a> class.</p>
 
@@ -761,6 +760,9 @@ fig.tight_layout()
 
     
     
+    
+    <script src="/js/mathjax-config.js"></script>
+    
 
     
     
@@ -778,6 +780,8 @@ fig.tight_layout()
       
 
       
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
       
     
 

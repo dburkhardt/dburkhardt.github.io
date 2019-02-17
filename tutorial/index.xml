@@ -37,8 +37,22 @@ High throughput technologies are only a few years old, and there are not many (i
       <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
       
       <guid>https://dburkhardt.github.io/tutorial/visualizing_pca/</guid>
-      <description>In this section, we&amp;rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential step, and will tell us a lot about the nature of the data we&amp;rsquo;re working with. We&amp;rsquo;ll figure out things like:
+      <description>In this section, we&amp;rsquo;re going to go over a few introductory techniques for visualizing and exploring a single cell dataset. This is an essential analysis step, and will tell us a lot about the nature of the data we&amp;rsquo;re working with. We&amp;rsquo;ll figure out things like:
  If the data exists on a trajectory, clusters, or a mix of both How many kinds of cells are likely present in a dataset If there are batch effects between samples If there are technical artifacts remaining after preprocessing  We&amp;rsquo;re going to use two main tools for this analysis: PCA and PHATE.</description>
+    </item>
+    
+    <item>
+      <title>3. Visualizing data using PHATE</title>
+      <link>https://dburkhardt.github.io/tutorial/visualizing_phate/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/visualizing_phate/</guid>
+      <description>Once you&amp;rsquo;ve inspected the principle components of your dataset, it&amp;rsquo;s time to start visualizing your data using PHATE. We&amp;rsquo;re going to demonstrate PHATE analysis on a few datasets. We will show:
+ How PHATE works
+ Running PHATE on several datasets
+ How to interpret a PHATE plot
+ Clustering using the diffusion potential How to pick parameters for PHATE
+ How to troubleshoot common issues with PHATE plots</description>
     </item>
     
   </channel>

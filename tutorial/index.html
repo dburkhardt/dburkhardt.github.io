@@ -202,6 +202,25 @@
         
 
         <li class="nav-item">
+          <a class="nav-link" href="/post/">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
           <a class="nav-link" href="/tutorial/">
             
             <span>Tutorials</span>
@@ -265,11 +284,11 @@
   </div>
   
   <div class="docs-toc-item">
-    <a class="docs-toc-link" href="/tutorial/introduction/">How to single cell</a>
+    <a class="docs-toc-link" href="/tutorial/what_is_single_cell/">How to single cell</a>
     <ul class="nav docs-sidenav">
       
       <li >
-        <a href="/tutorial/introduction/">0. Introduction</a>
+        <a href="/tutorial/what_is_single_cell/">1. What is single cell?</a>
       </li>
       
       <li >
@@ -320,13 +339,24 @@
           <div class="article-style" itemprop="articleBody">
             <p>As single cell RNA-sequencing experiments become more popular, we keep on hearing a few questions over and over: &ldquo;How should I start analyzing my data?&rdquo; &ldquo;What&rsquo;s the advantage of using <a href="https://github.com/krishnaswamylab/PHATE" target="_blank">PHATE</a> over t-SNE?&rdquo; &ldquo;How should I cluster my data?&rdquo; &ldquo;How can I identify differentially expressed genes between these two clusters?&rdquo;</p>
 
-<p>This tutorial is designed to answer those questions.</p>
+<p>High throughput technologies are only a few years old, and there are not many (if any) standards for analyzing a dataset. This being said, there are a few nice tutorials out there. Rahul Satija&rsquo;s lab at the NY Genome Center, the home of the popular Seurat toolkit has <a href="https://satijalab.org/seurat/get_started.html" target="_blank">a collection of easy-to-follow tutorials</a>. In May of this year, the Hemberg lab at the Sanger Institute posted <a href="https://hemberg-lab.github.io/scRNA.seq.course/index.html" target="_blank">a great single cell course</a> as part of the Bioinformatics Training Unit at Cambridge. John Marioni&rsquo;s lab at UCL has a paper on F1000 on <a href="https://f1000research.com/articles/5-2122/v2" target="_blank">Low-level analysis of single-cell RNA-seq data with Bioconductor</a>. A quick google search will reveal a handful of other tutorials.</p>
 
-<p><strong>Sections:</strong><br />
-<a href="/tutorial/introduction/">0. Introduction</a><br />
-<a href="/tutorial/preprocessing/">1. Preprocessing</a><br />
-<a href="/tutorial/visualizing_pca/">2. Visualization using PCA</a><br />
-<a href="/tutorial/visualizing_phate">3. Visualization using PHATE</a></p>
+<p>I encourage reading widely and getting a sense of what other groups do. There are many ways to do single cell analysis. Some ways are definitely bad (don&rsquo;t get us started on clustering on t-SNE dimensions), but usually the important thing is trying to understand <strong>how</strong> the methods you apply work and <strong>why</strong> you might pick one tool or another. In general, you should view the results of most of these analyses as hypotheses that need to be validated by the specific tools of your discipline.</p>
+
+<p>This being said, in the Krishnaswamy lab, we have gone through hundreds of samples of scRNA-seq data and have learned a lot along the way. We have developed a growing number of novel methods for analyzing these datasets and extracting biological meaning. You can find all of our tools publicly available on our lab GitHub: <a href="https://github.com/krishnaswamylab/" target="_blank">https://github.com/krishnaswamylab/</a>.</p>
+
+<p>In this introductory post, my goal is to go through the basics of analyzing a single cell RNA-sequencing dataset composed of a few samples. I&rsquo;m assuming you already know what scRNA-seq is and have read a few papers in the field. I&rsquo;m also assuming you&rsquo;ve heard of Python and are willing to learn Numpy, Pandas, and Matplotlib. Most of the tools in the lab have been ported to R and are available as part of the scanpy and seurat packages, but all of us in the lab use python when we&rsquo;re analyzing datasets.</p>
+
+<p>Here&rsquo;s the basic workflow we&rsquo;re going to cover in this post:<br />
+1. What is single cell RNA-seq?
+2. Preprocessing - Filtering, normalization, transformation
+3. Visualization
+4. Clustering
+5. Differential expression</p>
+
+<p>We already have a set of tutorials for some of these tools on our lab Github: www.github.com/krishnaswamylab but here I will take a higher level approach to starting analysis and provide some insights that will hopefully facilitate your analysis.</p>
+
+<p>To get started, visit: <a href="/tutorial/what_is_single_cell"><strong>1. What is single cell?</strong></a></p>
 
           </div>
 

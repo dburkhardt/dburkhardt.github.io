@@ -204,6 +204,25 @@
         
 
         <li class="nav-item">
+          <a class="nav-link" href="/post/">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
           <a class="nav-link" href="/tutorial/">
             
             <span>Tutorials</span>
@@ -267,11 +286,11 @@
   </div>
   
   <div class="docs-toc-item">
-    <a class="docs-toc-link" href="/tutorial/introduction/">How to single cell</a>
+    <a class="docs-toc-link" href="/tutorial/what_is_single_cell/">How to single cell</a>
     <ul class="nav docs-sidenav">
       
       <li >
-        <a href="/tutorial/introduction/">0. Introduction</a>
+        <a href="/tutorial/what_is_single_cell/">1. What is single cell?</a>
       </li>
       
       <li class="active">
@@ -392,7 +411,7 @@
 
 <p>Most scRNA-seq toolkits are written in R, but we develop our tools in Python. Currently, <a href="https://github.com/theislab/scanpy" target="_blank">Scanpy</a> is the most popular toolkit for scRNA-seq analysis in Python. In fact, if you&rsquo;d prefer to use that, you can find most of our lab&rsquo;s analytical methods including PHATE and MAGIC in scanpy. However, scanpy has a  highly structured framework for data representation and a steep learning curve that is unnescessary for users already comfortable with the suite of methods available in <a href="https://pandas.pydata.org/" target="_blank">Pandas</a>, <a href="https://www.scipy.org/" target="_blank">Scipy</a>, and <a href="http://scikit-learn.org/stable/" target="_blank">Sklearn</a>.</p>
 
-<p>To accomodate these users (including ourselves) we developed <code>scprep</code> (<strong>s</strong>ingle <strong>c</strong>ell <strong>prep</strong>aration). <code>scprep</code> makes it easier to use the Pandas / Scipy / Sklearn ecosystem for scRNA-seq analysis. Most of <code>scprep</code> is composed of helper functions to perform tasks common to single cell data like loading counts matrices, filtering &amp; normalizing cells by library size, and calculating common statistics. The key advantage of scprep is that data can be stored in Pandas DataFrames, Numpy arrays, Scipy Sparse Matices, it is <em>just works</em>.</p>
+<p>To accomodate these users (including ourselves) we developed <code>scprep</code> (Single Cell PREParation). <code>scprep</code> makes it easier to use the Pandas / Scipy / Sklearn ecosystem for scRNA-seq analysis. Most of <code>scprep</code> is composed of helper functions to perform tasks common to single cell data like loading counts matrices, filtering &amp; normalizing cells by library size, and calculating common statistics. The key advantage of scprep is that data can be stored in Pandas DataFrames, Numpy arrays, Scipy Sparse Matices, it is <em>just works</em>.</p>
 
 <p>For users starting out, you might find it more valuable to spend time spent getting comfortable with these tools because they can be used for analysis of all kinds of data, not just scRNA-seq. If you want to learn more, checkout the <a href="https://docs.scipy.org/doc/numpy-1.15.1/user/quickstart.html" target="_blank">Numpy Quickstart Tutorial</a>, the <a href="https://pandas.pydata.org/pandas-docs/stable/tutorials.html" target="_blank">Pandas Tutorials</a>, the <a href="https://matplotlib.org/tutorials/index.html" target="_blank">Matplotlib Tutorials</a>, and consider getting a copy of Wes McKinney&rsquo;s book <a href="http://shop.oreilly.com/product/0636920050896.do" target="_blank">Python for Data Analysis</a>. McKinney is the original author of Pandas, and I&rsquo;m glad I went through the book at the beginning of my PhD.</p>
 

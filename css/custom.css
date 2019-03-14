@@ -34,6 +34,12 @@ code {
   max-height:400px
 }
 
+.img-md figcaption{
+  color: grey;
+  text-align: center;
+  font-size: .8rem;
+}
+
 
 .img-lg {
   max-height: 500px;

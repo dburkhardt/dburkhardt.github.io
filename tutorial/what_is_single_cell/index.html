@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 3.3.0">
+  <meta name="generator" content="Hugo 0.54.0" />
+  <meta name="author" content="Krishnaswamy Lab">
+
+  
+  
+  
+  
+    
+  
+  <meta name="description" content="Recent advances in single cell proteomics and transcriptomics make it easier to collect single cell measurements across biological systems. The two most common methods are single cell RNA-sequencing and CyTOF. Although we will focus on scRNA-seq in this tutorial, the concepts important for single cell analysis generally hold across technologies. This is especially true for visualization, clustering, and differential expression.
+Why single cell? Single cells are one of the basic units of biology.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://dburkhardt.github.io/tutorial/what_is_single_cell/">
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" crossorigin="anonymous">
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono">
+  
+
+  <link rel="stylesheet" href="/styles.css">
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  
+
+  
+  
+  
+
+  
+  <link rel="alternate" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  <link rel="feed" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://dburkhardt.github.io/tutorial/what_is_single_cell/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Krishnaswamy Lab">
+  <meta property="og:url" content="https://dburkhardt.github.io/tutorial/what_is_single_cell/">
+  <meta property="og:title" content="1. What is single cell? | Krishnaswamy Lab">
+  <meta property="og:description" content="Recent advances in single cell proteomics and transcriptomics make it easier to collect single cell measurements across biological systems. The two most common methods are single cell RNA-sequencing and CyTOF. Although we will focus on scRNA-seq in this tutorial, the concepts important for single cell analysis generally hold across technologies. This is especially true for visualization, clustering, and differential expression.
+Why single cell? Single cells are one of the basic units of biology."><meta property="og:image" content="https://dburkhardt.github.io/img/portrait.jpg">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-09-09T00:00:00-04:00">
+  
+  <meta property="article:modified_time" content="2019-01-01T00:00:00-05:00">
+  
+
+  
+
+  
+
+  <title>1. What is single cell? | Krishnaswamy Lab</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Krishnaswamy Lab</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/post/">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tutorial/">
+            
+            <span>Tutorials</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" id="search-query" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/tutorial/">Overview</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/tutorial/what_is_single_cell/">How to single cell</a>
+    <ul class="nav docs-sidenav">
+      
+      <li class="active">
+        <a href="/tutorial/what_is_single_cell/">1. What is single cell?</a>
+      </li>
+      
+      <li >
+        <a href="/tutorial/preprocessing/">1. Preprocessing</a>
+      </li>
+      
+      <li >
+        <a href="/tutorial/visualizing_pca/">2. Visualizing PCA dimensions</a>
+      </li>
+      
+      <li >
+        <a href="/tutorial/visualizing_phate/">3. Visualizing data using PHATE</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      
+      <p class="docs-toc-title">On this page</p>
+      
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#why-single-cell">Why single cell?</a></li>
+<li><a href="#a-brief-history-of-scrna-seq">A brief history of scRNA-seq</a></li>
+<li><a href="#how-to-capture-cells-in-droplets">How to capture cells in droplets</a></li>
+<li><a href="#scrna-seq-library-preparation">scRNA-seq library preparation</a></li>
+<li><a href="#special-considerations-for-single-cell-data">Special considerations for single cell data</a></li>
+<li><a href="#common-goals-for-analysis-of-scrna-seq-data">Common goals for analysis of scRNA-seq data</a></li>
+</ul></li>
+</ul>
+</nav>
+
+      <ul class="nav toc-top">
+        <li><a href="#">Back to top</a></li>
+      </ul>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">1. What is single cell?</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<p>Recent advances in single cell proteomics and transcriptomics make it easier to collect single cell measurements across biological systems. The two most common methods are single cell RNA-sequencing and CyTOF. Although we will focus on scRNA-seq in this tutorial, the concepts important for single cell analysis generally hold across technologies. This is especially true for visualization, clustering, and differential expression.</p>
+
+<h2 id="why-single-cell">Why single cell?</h2>
+
+<p>Single cells are one of the basic units of biology. We generally think of single cells as the <em>things</em> that act on themselves and surrounding extracellular structures to perform basic tasks such as moving appendages, processing external stimuli, defending the organism from infectious invaders, <em>etc.</em>. Because these units are so important for the function of an organism, it&rsquo;s naturally to wonder how many different kinds of cells are in a specific tissue, how these cells change over time, and how cells differ between individuals.</p>
+
+<p>Although the genome provides information for all these phenomena, it is the differences in expression of individual genes (at the DNA, RNA, and protein level) that account for differences in function across cell types. Because individual genes in individual cells effect functions in biological systems, one can understand why averaging expression across many cell types mixed at unknown ratios&ndash;as done in bulk RNA-seq&ndash;limits biological insight.</p>
+
+<h2 id="a-brief-history-of-scrna-seq">A brief history of scRNA-seq</h2>
+
+<p>Measuring gene expression in single cells has been around since at least 1992, when J. Eberwine <em>et al.</em> published the first single cell qPCR assay in <a href="https://doi.org/10.1073/pnas.89.7.3010" target="_blank"><em>Analysis of gene expression in single live neurons</em> (1992)</a>. They measured expression of roughly one dozen genes in 15 neurons isolated from the brain of a rat and characterized two distinct populations based on ion channel expression. Shortly thereafter in 1998, developments in smFISH (single molecule Fluorescence In Situ Hybridization) provided the a way to visualize expression of individual mRNA molecules in single cells <a href="https://www.ncbi.nlm.nih.gov/pubmed/9554849" target="_blank">(Femino AM, et al. 1998)</a>. smFISH remains the current gold standard for single cell RNA quantification and is used for validation of many scRNA-seq methods. In 2003, Kamme F <em>et al.</em> expanded the set of genes assayable in single cells using microarrays <a href="https://www.ncbi.nlm.nih.gov/pubmed/12736331" target="_blank">(Kamme F. <em>et al.</em> 2003)</a>. In that study, a groundbreaking ~4500 genes were assayed in 11 cells.</p>
+
+<p>All the above methods rely on some method of hybridization to nucleic acid probes. It wasn&rsquo;t until 2009, however, when RNA sequencing expanded single cell RNA profiling to the entire transcriptome <a href="https://www.ncbi.nlm.nih.gov/pubmed/19349980" target="_blank">(Tang, F. <em>et al.</em> 2009)</a>. This protocol and subsequent single cell protocols require the manual isolation of individual cells into PCR tubes for cDNA amplification. The time-consuming nature of this technique and high cost of preparing relatively large microliter-scale reverse transcription reactions kept dataset sizes down in the range of dozens of cells per sample. In 2012, Fluidigm introduced the C1 microfluidic device that (at the time) automatically captured up to 96 cells from a single cell suspension created single-cell libraries using nanoliter reaction volumes.</p>
+
+<p>The biggest disruption to single cell transcriptomics arrived in the summer of 2015 when two groups at Harvard published independent microfluidics technologies to capture cells in nanoliter droplets (<a href="https://www.ncbi.nlm.nih.gov/pubmed/26000488" target="_blank">Macosko EZ. <em>et al.</em> 2015</a>; <a href="https://www.ncbi.nlm.nih.gov/pubmed/26000487" target="_blank">Klein, AM. <em>et al.</em> 2015</a>). The speed, scalability, and low cost of these methods suddenly made it possible to profile tens of thousands of cells in a single experiment. These droplet single cell approaches were commercialized by 10X Genomics in 2016 in their $125k lunch-box sized Chromium device (<a href="https://www.ncbi.nlm.nih.gov/pubmed/28091601" target="_blank">Zheng, GZ. <em>et al.</em> 2017</a>). Since then, there have been several advances in single cell transcriptomics, including the ability to capture simultaneously cell surface epitopes and transcriptomes in single cells (<a href="https://www.ncbi.nlm.nih.gov/pubmed/28759029" target="_blank">Stoeckius M., <em>et al.</em> 2017</a>) and efficient split-pool library preparation methods (<a href="https://www.ncbi.nlm.nih.gov/pubmed/28192419" target="_blank">Gierahn TM. <em>et al.</em> 2017</a>). However, most of the data our lab analyzes comes from the 10X Genomics 3&rsquo; Single Cell library prep kit.</p>
+
+<h2 id="how-to-capture-cells-in-droplets">How to capture cells in droplets</h2>
+
+<p>Capturing mRNA from individual cells is a challenging goal. The first challenge is isoalting individual cells for reverse transcription. In droplet based methods this is done using a microfluidic chip. The following schematic from <a href="https://www.ncbi.nlm.nih.gov/pubmed/28091601" target="_blank">Zheng, GZ. <em>et al.</em> (2017)</a> shows how this works.</p>
+
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/10x_cell_capture.png" alt="*Image from [Zheng, GZ. et al. (2017)](https://www.ncbi.nlm.nih.gov/pubmed/28091601)*" />
+
+
+
+<figcaption data-pre="Figure " data-post=":" >
+  
+  <p>
+    <em>Image from <a href="https://www.ncbi.nlm.nih.gov/pubmed/28091601" target="_blank">Zheng, GZ. et al. (2017)</a></em>
+    
+    
+    
+  </p> 
+</figcaption>
+
+</figure>
+
+<p>The chip captures beads loaded with barcoded library adapters and individual cells into droplets. These droplets form an emulsion because they are suspended in oil. In the next image, you can see a single looped cell capture event on a DropSeq chip.</p>
+
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/dropseq_capture.gif" alt="*Image from [dropseq.org](https://www.dropseq.org)*" />
+
+
+
+<figcaption data-pre="Figure " data-post=":" >
+  
+  <p>
+    <em>Image from <a href="https://www.dropseq.org" target="_blank">dropseq.org</a></em>
+    
+    
+    
+  </p> 
+</figcaption>
+
+</figure>
+
+<p>Here, a single cell (bottom) joins a bead in lysis buffer (left) as they flow through the chip. Oil flows in through the channels in the middle and pinch off individual droplets.</p>
+
+<p>Although the exact nature of the bead varies between technologies, the basic idea is that each bead contains uniquely-barcoded adapters with: an oligo d(T) that hybridizes to poly-A tails, a cell barcode, a unique molecular identifier, and reverse transcription primers.</p>
+
+<h2 id="scrna-seq-library-preparation">scRNA-seq library preparation</h2>
+
+<p>Although you probably know this, let&rsquo;s start by reviewing the basic structure of an mRNA.</p>
+
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/gene_model.jpg" alt="*Image from [APASdb](http://genome.bucm.edu.cn/utr/)*" />
+
+
+
+<figcaption data-pre="Figure " data-post=":" >
+  
+  <p>
+    <em>Image from <a href="http://genome.bucm.edu.cn/utr/" target="_blank">APASdb</a></em>
+    
+    
+    
+  </p> 
+</figcaption>
+
+</figure>
+
+<p>In the standard 3&rsquo; library preparation, the goal is to select for mRNA using the polyA tail. Selection is necessary because the majority of RNA in a cell consists of ribosomal RNA (rRNA) and transfer RNA (tRNA). We don&rsquo;t want to sequence these functional RNAs because they don&rsquo;t give us information about gene expression. To select poly-adenylated mRNA, the library adapters include a long stretch of thymines (Ts) that hybridize with the long stretch of adenines (As) in the polyA tail.</p>
+
+<p><a href="https://www.ncbi.nlm.nih.gov/pubmed/30089906" target="_blank">La Manno, G. <em>et al.</em> (2018)</a> found that these library adapters also prime internally (<em>i.e.</em> more 5&rsquo; than the polyA) making it possible to sequence the introns of newly-transcribed pre-mRNA molecules facilitating the detection of actively expressed genes.</p>
+
+<p>Following hybridization of adapters, the basic steps for library preparation are as follows:</p>
+
+<ol>
+<li>Cell is captured in droplet with bead<br /></li>
+<li>Cell lyses in hypotonic buffer within droplet<br /></li>
+<li>3&rsquo; barcoded-adapter hybridizes to polyA tails on mRNA<br /></li>
+<li>First strand reverse transcription (RT)</li>
+<li>Second strand RT</li>
+<li>PCR amplification</li>
+<li>Fractionation and size selection</li>
+<li>5&rsquo; adapter ligation</li>
+<li>Final amplification</li>
+<li>Sequencing</li>
+</ol>
+
+<div class="alert alert-note">
+  <p>The exact library preparation protocol will vary by technology (and version thereof). For a detailed explanation of the library preparation, consult technical documentation for whichever technology you&rsquo;ll use.</p>
+
+</div>
+
+
+<p>Because of the size selection and PCR amplification primed using the 3&rsquo; and 5&rsquo; adapters, the library is heavily 3&rsquo; biased with the majority of the read coverage falling ~200nt from the 3&rsquo; untranslated region (UTR) of the mRNA. Note, however, that annotated 3&rsquo; UTRs do not always correspond to the actual isoform expressed in a sample. For this reason, you may get coverage &ldquo;past&rdquo; the end of the gene.</p>
+
+<p>In the following plot, I took the 9K PBMC dataset from 10X Genomics and plotted coverage over the top 500 expressed genes relative to the annotated 3&rsquo; UTR.</p>
+
+
+
+
+<figure class="img-md">
+
+<img src="/img/how_to_single_cell/coverage_over_utr3.png" />
+
+
+</figure>
+
+<h2 id="special-considerations-for-single-cell-data">Special considerations for single cell data</h2>
+
+<p>Single cell datasets are unlike most other biological datasets for several reasons. First, these datasets are <em>large</em>. When analyzing bulk RNA-seq data, it is common to have roughly 2 to 10 datasets. A massive dataset, like the one generated by the  GTEx (Genotype-Tissue Expression) consortium, might have 50,000 gene expression measurements. Compare this to the 1.3 million cells dataset generated by 10X Genomics in 2017. Even a lab with no experience generating large biomedical data can use scRNA-seq to measure gene expression in several thousand cells. The sheer number of observations in these datasets necessitate special computational approaches to analyze them.</p>
+
+<p>Another reason that single cell datasets are challenging to analyze is they are <em>high dimensional</em>. Compared to more common single cell methods like FACS or single cell qPCR or microarrays, scRNA-seq datasets comprise many more features per cell. This makes it difficult to understand things like &ldquo;which cells are close to which?&rdquo; or &ldquo;what genes are most similar?&rdquo;. Thankfully, we can make some simplifying assumptions that make tackling these questions easier.</p>
+
+<p>Single cell data is also <em>noisy</em>. In scRNA-seq, it is estimated that only 10-40% of the hundreds of thousands of genes in a cell are captured during reverse transcription.</p>
+
+<h2 id="common-goals-for-analysis-of-scrna-seq-data">Common goals for analysis of scRNA-seq data</h2>
+
+          </div>
+
+          
+
+        </div>
+
+        <div class="body-footer">
+          Last updated on Jan 1, 2019
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    &copy; 2019 Krishnaswamy Lab &middot; 
+
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+    
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha256-VsEqElsCHSGmnmHXGQzvoWjWwoznFSZc6hs7ARLRacQ=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="/js/academic.min.70f0041f5a24c6a675ac218c98d7ef71.js"></script>
+
+    
+
+  </body>
+</html>
+
+

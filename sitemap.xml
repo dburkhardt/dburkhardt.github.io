@@ -4,16 +4,8 @@
     
     <url>
     
-      <loc>https://dburkhardt.github.io/post/math-sample/</loc>
-      <lastmod>2019-01-01T00:00:00+00:00</lastmod>
-    </url>
-    
-  
-    
-    <url>
-    
-      <loc>https://dburkhardt.github.io/tutorial/introduction/</loc>
-      <lastmod>2019-01-01T00:00:00-05:00</lastmod>
+      <loc>https://dburkhardt.github.io/post/2018-10-28-magic/</loc>
+      <lastmod>2018-10-28T00:00:00+00:00</lastmod>
     </url>
     
   
@@ -21,6 +13,14 @@
     <url>
     
       <loc>https://dburkhardt.github.io/tutorial/preprocessing/</loc>
+      <lastmod>2019-01-01T00:00:00-05:00</lastmod>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://dburkhardt.github.io/tutorial/what_is_single_cell/</loc>
       <lastmod>2019-01-01T00:00:00-05:00</lastmod>
     </url>
     
@@ -109,8 +109,8 @@
     
     <url>
     
-      <loc>https://dburkhardt.github.io/tags/example/</loc>
-      <lastmod>2019-01-01T00:00:00+00:00</lastmod>
+      <loc>https://dburkhardt.github.io/tags/magic/</loc>
+      <lastmod>2018-10-28T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -118,8 +118,8 @@
     
     <url>
     
-      <loc>https://dburkhardt.github.io/tags/math/</loc>
-      <lastmod>2019-01-01T00:00:00+00:00</lastmod>
+      <loc>https://dburkhardt.github.io/tags/scrna-seq/</loc>
+      <lastmod>2018-10-28T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

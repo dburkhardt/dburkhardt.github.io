@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 3.3.0">
+  <meta name="generator" content="Hugo 0.54.0" />
+  <meta name="author" content="Krishnaswamy Lab">
+
+  
+  
+  
+  
+    
+  
+  <meta name="description" content="Part 1: The problem Single cell RNA-sequencing (scRNA-seq) is an increasingly popular method for measuring transcriptome-wide gene expression in single cells. However, there are several technical challenges that make analysing scRNA-seq data difficult. One of the biggest hurdles stems from the fact that of the roughly 100,000-300,000 mRNAs in a cell, only 10-40% are captured using current scRNA-seq protocols [1], [2], [3], [4]. As a result, all genes in all cells are undercounted, and lowly expressed genes may be recorded at 0s in the gene expression matrix despite being expressed.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://dburkhardt.github.io/post/2018-10-28-magic/">
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" crossorigin="anonymous">
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono">
+  
+
+  <link rel="stylesheet" href="/styles.css">
+  
+  <link rel="stylesheet" href="/css/custom.css">
+  
+
+  
+  
+  
+
+  
+  <link rel="alternate" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  <link rel="feed" href="https://dburkhardt.github.io/index.xml" type="application/rss+xml" title="Krishnaswamy Lab">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://dburkhardt.github.io/post/2018-10-28-magic/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Krishnaswamy Lab">
+  <meta property="og:url" content="https://dburkhardt.github.io/post/2018-10-28-magic/">
+  <meta property="og:title" content="Denoising and imputing scRNA-seq data | Krishnaswamy Lab">
+  <meta property="og:description" content="Part 1: The problem Single cell RNA-sequencing (scRNA-seq) is an increasingly popular method for measuring transcriptome-wide gene expression in single cells. However, there are several technical challenges that make analysing scRNA-seq data difficult. One of the biggest hurdles stems from the fact that of the roughly 100,000-300,000 mRNAs in a cell, only 10-40% are captured using current scRNA-seq protocols [1], [2], [3], [4]. As a result, all genes in all cells are undercounted, and lowly expressed genes may be recorded at 0s in the gene expression matrix despite being expressed."><meta property="og:image" content="https://dburkhardt.github.io/img/portrait.jpg">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-10-28T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2018-10-28T00:00:00&#43;00:00">
+  
+
+  
+
+  
+
+  <title>Denoising and imputing scRNA-seq data | Krishnaswamy Lab</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Krishnaswamy Lab</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/post/">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tutorial/">
+            
+            <span>Tutorials</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1 itemprop="name">Denoising and imputing scRNA-seq data</h1>
+
+  
+  <p class="page-subtitle">By David van Dijk, Daniel Burkhardt, Ngan Vu, Smita Krishnaswamy</p>
+  
+
+  
+    
+
+<div class="article-metadata">
+
+  
+  
+  <span itemscope itemprop="author" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Krishnaswamy Lab">
+  </span>
+  
+
+  <span class="article-date">
+    
+    <meta content="2018-10-28 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+    <time datetime="2018-10-28 00:00:00 &#43;0000 UTC" itemprop="dateModified">
+      Oct 28, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Krishnaswamy Lab">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    14 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Denoising%20and%20imputing%20scRNA-seq%20data&amp;url=https%3a%2f%2fdburkhardt.github.io%2fpost%2f2018-10-28-magic%2f"
+         target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fdburkhardt.github.io%2fpost%2f2018-10-28-magic%2f"
+         target="_blank" rel="noopener">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fdburkhardt.github.io%2fpost%2f2018-10-28-magic%2f&amp;title=Denoising%20and%20imputing%20scRNA-seq%20data"
+         target="_blank" rel="noopener">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2fdburkhardt.github.io%2fpost%2f2018-10-28-magic%2f&amp;title=Denoising%20and%20imputing%20scRNA-seq%20data"
+         target="_blank" rel="noopener">
+        <i class="fab fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Denoising%20and%20imputing%20scRNA-seq%20data&amp;body=https%3a%2f%2fdburkhardt.github.io%2fpost%2f2018-10-28-magic%2f">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style" itemprop="articleBody">
+      
+
+<h1 id="part-1-the-problem">Part 1: The problem</h1>
+
+<p>Single cell RNA-sequencing (scRNA-seq) is an increasingly popular method for measuring transcriptome-wide gene expression in single cells. However, there are several technical challenges that make analysing scRNA-seq data difficult. One of the biggest hurdles stems from the fact that of the roughly 100,000-300,000 mRNAs in a cell, only 10-40% are captured using current scRNA-seq protocols <a href="https://www.ncbi.nlm.nih.gov/pubmed/24919153" title="Single-cell RNA-seq reveals dynamic paracrine control of cellular variation." target="_blank">[1]</a>, <a href="https://www.ncbi.nlm.nih.gov/pubmed/24141493" title="Quantitative assessment of single-cell RNA-sequencing methods." target="_blank">[2]</a>, <a href="https://www.ncbi.nlm.nih.gov/pubmed/22939981" title="CEL-Seq: single-cell RNA-Seq by multiplexed linear amplification." target="_blank">[3]</a>, <a href="https://www.ncbi.nlm.nih.gov/pubmed/21543516" title="Characterization of the single-cell transcriptional landscape by highly multiplex RNA-seq." target="_blank">[4]</a>. As a result, all genes in all cells are undercounted, and lowly expressed genes may be recorded at 0s in the gene expression matrix despite being expressed.</p>
+
+<p>This undercounting adds several hurdles to the analysis of scRNA-seq data that do not exist for bulk-RNA sequencing. In this post, we will first discuss a few of these hurdles (in part 1) and then how they can be addressed using MAGIC (in part 2), our recently published data denoising and imputation method.</p>
+
+<p>In part 1 we will discuss the following:</p>
+
+<ol>
+<li><p>Why are molecules undersampled in scRNA-seq?</p></li>
+
+<li><p>How does undercounting/dropout obscure biology?</p></li>
+
+<li><p>How can imputation solve these problems?</p></li>
+</ol>
+
+<h3 id="rt-inefficiency-leads-to-undercounting-genes-and-dropout">RT inefficiency leads to undercounting genes and “dropout”</h3>
+
+<p>As we mentioned above, only 10-40% of the transcripts in a given cell are captured in current scRNA-seq methods. For the most part, this is because doing the first round of reverse transcription (RT) and subsequent PCR amplification in the presence of cell lysate in nanoliter droplets is not very efficient. As a result, it’s better to think of scRNA-seq as a sampling method, as opposed to bulk RNA-sequencing which is more akin to a census or counting method.</p>
+
+<p>In the MAGIC paper, we showed what this looks like. It’s hard to establish a “ground truth” for single cell data, so we picked <a href="https://www.ncbi.nlm.nih.gov/pubmed/24270809" title="The effects of genetic variation on gene expression dynamics during development." target="_blank">a large bulk C. elegans time course</a> and simulated a 20% mRNA capture efficiency by down-sampling molecules in the dataset. On the left is the original data for 9861 genes in 206 worms, and the right is the simulated undercounted data.</p>
+
+<p><img src="/2018-10-28-magic/worms.png" alt="Worms" /></p>
+
+<p>As you can see, there are a lot of zero values. The question is, are some zeros different from others?</p>
+
+<p>When reading about scRNA-seq, it’s difficult to avoid the word “dropout.” It’s even harder to find a consistent definition of the term. The most common definition we’ve come across refers to when a gene is lowly expressed, say in the range of 1-20 molecules / cell. Now if you’re only capturing 10% of all molecules in a cell, and assume this sampling follows a negative binomial distribution, you will find that in many cells 0 unique reads will be observed <strong>despite the gene being expressed</strong>. This “observed as 0, but present” is termed dropout or a technical zero. This is opposed to a gene that just isn’t expressed in that cell, which is called a true or biological zero.</p>
+
+<p>We will get more into this later, but we think it’s a bad idea to think about dropout as a problem only affecting lowly expressed genes because <strong>undercounting happens to all genes regardless of expression</strong>. It just so happens that for lowly expressed genes, undercounting leads to an observation of 0. This is fundamentally different from a problem where there are missing values that might be recorded as 0, such as <a href="https://en.wikipedia.org/wiki/Netflix_Prize" title="Netflix Prize" target="_blank">the Netflix Problem</a>. In the case of missing values, you know what you don’t know, and there exist very efficient and elegant methods to solve this problem, such as nuclear norm matrix completion. With scRNA-seq, we’re dealing with unknown unknowns.</p>
+
+<p>To illustrate this, see the three matrices below. The left is the original data matrix, the middle matrix is undercounted, i.e. 80% of the molecules are not counted so values are undercounted, in the third matrix 80% of the entries are set to zero. In scRNA-seq, undercounting produces a gene expression matrix more like the middle matrix where every entry can be affected.</p>
+
+<p><img src="/2018-10-28-magic/matrices.png" alt="Matrices" /></p>
+
+<p>There are many complex processes that add noise to gene expression data in scRNA-seq. We would like to note here that MAGIC makes no attempt to explicitly model these processes or assume a particular data-generating distribution. Instead, MAGIC assumes that gene expression in scRNA-seq follows the smoothness assumption. That is, we assume that the close neighbors of a cell contain gene expression information that can be used to recover information lost to undercounting in that cell. We’ll discuss this further in part 2 of this post.</p>
+
+<h3 id="undercounting-rna-molecules-obscures-biology">Undercounting RNA molecules obscures biology</h3>
+
+<p>It’s not hard to imagine that dealing with data missing 90% of counts is a problem. Indeed, working with raw scRNA-seq data is a challenge - many biological signals are obscured and many types of analyses are impossible to do on sparse data. For example, dropout obscures gene-gene relationships. To illustrate this let’s look at the following two gene-gene scatterplots of an EMT dataset that we presented in the MAGIC paper:</p>
+
+<p><img src="/2018-10-28-magic/EMT_edges.png" alt="EMT edges" /></p>
+
+<p>We expect Vimentin and E-Cadherin to be negatively correlated, since Vimentin is a mesenchymal marker and E-Cadherin is an epithelial marker. However, due to the undercounting, this relationship is not apparent. Similarly, we expect Vimentin and Snail to be positively correlated as Snail is a TF involved in regulation of the mesenchymal state.</p>
+
+<h3 id="how-can-we-overcome-undercounting">How can we overcome undercounting?</h3>
+
+<p>Although we observe a small sample of mRNAs in a cell, many genes are redundant. Sets of transcription factors regulate modules of genes together. This means that the underlying gene expression state space is inherently low-dimensional and the feature set is not truly independent. However, we’re still left with the problem of figuring out how to use this inter-dependency of genes to recover undercounted gene expression.</p>
+
+<h1 id="part-2-magic">Part 2: MAGIC</h1>
+
+<p>In part 1, we wrote about how technical challenges in scRNA-seq lead to a phenomenon that we’re calling undercounting. Because of inefficiencies in mRNA capture, the counts for all genes in each cell of a gene expression matrix represent a subsample of all mRNAs present in that cell. Here, we will introduce our solution to this problem, called MAGIC, and discuss its practical application to scRNA-seq data.</p>
+
+<p>Specifically, we will discuss:</p>
+
+<ol>
+<li><p>How MAGIC recovers gene expression lost to dropout</p></li>
+
+<li><p>Interpretation of non-zero values after MAGIC</p></li>
+
+<li><p>Selecting optimal diffusion time for MAGIC</p></li>
+
+<li><p>Does MAGIC mix clusters?</p></li>
+
+<li><p>Minimum cell numbers for MAGIC</p></li>
+
+<li><p>Where does MAGIC fit in your pipeline</p></li>
+</ol>
+
+<h3 id="magic">MAGIC</h3>
+
+<p>In our recent paper <a href="https://www.ncbi.nlm.nih.gov/pubmed/29961576" title="Recovering Gene Interactions from Single-Cell Data Using Data Diffusion." target="_blank">Recovering Gene Interactions from Single-Cell Data Using Data Diffusion</a>, we propose a data imputation and denoising algorithm called MAGIC (Markov Affinity-based Graph Imputation of Cells). The idea of MAGIC is that we first learn the underlying structure, or manifold, of the data, and then recover the gene values using this manifold. To do this, MAGIC uses a cell-cell affinity graph to construct a Markov diffusion operator that is then used to diffuse data between cells, in the process filling in missing values and generally denoising the data.</p>
+
+<p><img src="/2018-10-28-magic/graphical_abstract.png" alt="Graphical abstract" /></p>
+
+<h3 id="low-pass-filter-on-the-manifold">Low-pass filter on the manifold</h3>
+
+<p>MAGIC has two parts: 1) learning the underlying structure, or manifold, of the data, and 2) imputing and denoising the gene counts by filtering them as signals on this manifold.</p>
+
+<p>For part 1 we first compute a cell-cell Markov affinity matrix. This matrix is a diffusion operator and we can take powers of this operator to perform a random walk on the graph. This enables us to learn the manifold of the data without making any assumptions about its shape.</p>
+
+<p>For part 2 we consider genes to be signals on the graph and we low-pass filter them by multiplying the powered diffusion operator with the genes. The result is a denoised and imputed data matrix.</p>
+
+<p>Another way to look at this process is in terms of graph signal processing. Powering the operator effectively performs a low pass filter on the spectrum of the graph. In a future blog post we will go deeper into understanding this, but briefly this means that we are eliminating high frequency dimensions from the graph. Since high frequency is associated with noise, including dropout, this effectively denoises and imputes the data.</p>
+
+<h3 id="dropout-versus-biological-zeros">Dropout versus biological zeros</h3>
+
+<p>We often get the question: “Does MAGIC remove all zeros? Even if they’re actual biological zeros?” The answer is yes AND no! The reason is that MAGIC effectively computes a neighborhood (in a non-linear way and on the manifold) and then exchanges values between neighboring cells. If, for some gene, all the neighbors have zero value, then after diffusion (data exchange) the values will still be zero. In this case we can conclude that we were dealing with a ‘real’ biological zero. If some of the neighbors were non-zero for this gene, then after diffusion all cells in the neighborhood will end up with a non-zero value. In this case the zeros were due to dropout. However, there is one caveat. In practice, due to the many steps of diffusion, it can be that after diffusion we end up with a small but non-zero value. One could naively interpret this as a non-biological zero that was due to dropout. This is not the case, and small non-zero values are still effectively biological zeros. Therefore, we recommend to not (only) look at the absolute values after imputation, but also at the relative values or distributions. In the figure below we show an example where after MAGIC there is a population of cells that, while not absolutely zero, effectively has no expression for the gene.</p>
+
+<p><img src="/2018-10-28-magic/zebrafish.png" alt="Zebrafish" /></p>
+
+<p>In the above figure we can see gene expression after magic in five cell types of the zebrafish embryo from Wagner et al (2018). In red is gene expression of cells from embryos in which chordin was knocked out using Cas9. In blue is the expression from control embryos. We can see that expression of myod1 is effectively 0 for some populations of cells in the forming somites and somites. Similarly, tbx6 is effectively note expressed in early or late adaxial cells. Although close inspection shows expression of these genes is slightly above 0, we can infer that this gene is not expressed in these cells.</p>
+
+<h3 id="optimal-diffusion-time">Optimal diffusion time</h3>
+
+<p>In MAGIC we perform data diffusion by powering the Markov diffusion operator. The number of times we power, and thus number of steps we walk, is called the diffusion time and is denoted by the parameter t. The diffusion time controls the extent of the low pass filtering - the higher the t, the fewer eigenvectors are left. t is probably the most important parameter in MAGIC and should therefore be chosen carefully. In order to ensure an optimal value of t we provide (by default) an automatic method for picking it. This method is based on the idea that as we diffuse the data changes and that the rate of change of the data reflects what kind of signal we are altering. There are two types of signals in the data, the biological signal and the noise. The former is a low frequency signal and the latter a high frequency signal. As we diffuse, we first remove the high frequency noise and we observe a rapid change in the data. After a number of diffusion steps we enter the data (non-noise) regime and as a result the change in data is much slower. The goal is to set t to be right at this regime change, such that we have removed most noise but not the actual biologically meaningful signal. By quantifying the change in data (||data_t - data_t-1||) as a function of t we can find the regime change by picking t at the elbow point.</p>
+
+<p><img src="/2018-10-28-magic/norm_magic.gif" alt="Normalized MAGIC" />
+<em>Visualization of cadherin, vimentin and zeb1 from the EMT dataset in the MAGIC paper.</em></p>
+
+<h3 id="manual-diffusion-time">Manual diffusion time</h3>
+
+<p>Our automatic diffusion time method is designed to pick a value of t that removes most of the noise but doesn’t remove much real biological signal. However, sometimes a user may want to do more diffusion for example when the data is especially noisy, and sacrifice some of the signal in return for more denoising. Conversely, a user may not want to sacrifice any biological signal and want less diffusion. In these cases we advise to first run automatic t selection and then manually choose a t that is slightly lower or higher.</p>
+
+<p>In addition, it may just be that the automatically selected value for t does not look good on your data. In this case you can pick t manually by gradually increasing t (e.g. starting at t=3) and visually inspect if the structure of the data is recovered but that it is not over-smoothed. For example, you can look at some known gene-gene relationships, or at the PCA after MAGIC. In addition, in the case that rare cell populations are present in the data, you can inspect whether these populations still exist after MAGIC and have not disappeared by being ‘pulled in’ by MAGIC. While the right t is data dependent, we have found that for almost all datasets the optimal t is between 3 and 12.</p>
+
+<h3 id="cluster-mixing">Cluster mixing</h3>
+
+<p>Another question that we often get is: “Does MAGIC contaminate cell types? Does it mix clusters or cell states/types that shouldn’t be mixed?” The answer is no, assuming that MAGIC is used correctly. The reason is that MAGIC learns the underlying nonlinear manifold of the data. This is something we will cover in more detail in future blog posts, but for now this means that the diffusion process follows the shape of the data. Diffusion doesn’t just mix each cell with every other cell, but it follows the biologically meaningful neighborhood structure of the data. This means that, effectively, the diffusion won’t leave a cluster or cell type/state and won’t mix cells that are biologically significantly different.</p>
+
+<p><img src="/2018-10-28-magic/clusters.png" alt="Clusters" /></p>
+
+<p>In the above figure we ran MAGIC on a mouse cortex dataset (Zeisel et al. 2015). We’re showing the relationship between two genes and the colors correspond to the clusters reported by the authors. We can see that MAGIC preserves the clusters and does not mix them.</p>
+
+<h3 id="cell-numbers">Cell numbers</h3>
+
+<p>MAGIC requires a certain number of cells (data points) to work properly. Unfortunately we can’t give a specific number as this depends on the overall quality of the data, level of dropout and noise, and the underlying intrinsic dimensionality (effective degrees of freedom) of the data. In general, our experience is that at the very least we need 500 cells but more like 1000 for comfortable imputation. Moreover, the number of cells you have will determine the amount of detail that can be recovered. MAGIC may still work with 200 cells but would only recover one major trend in the data (e.g. a single progression). Including more cells enables recovery of more refined structures, e.g, additional branches or clusters.</p>
+
+<h3 id="where-to-use-magic-in-your-pipeline">Where to use MAGIC in your pipeline</h3>
+
+<p>MAGIC doesn’t just work on raw count matrices, fresh from your read mapping pipeline. MAGIC requires the data to be properly normalized and filtered. This preprocessing obviously depends on the data type and technology, but for single-cell RNA-seq data we have a set of preprocessing steps that work well and we recommend these to users of MAGIC. First, one has to make sure that “bad” cells are removed. For example, this can mean cells with small library size (total UMI). Next, the data has to be library size normalized, meaning that all values for a cell are divided by the total UMI in that cell. This prevents the neighborhoods from being dominated by cells of similar library size. Library size, generally, does not reflect biology since it is a result of the stochastic sampling of molecules. Next, we want to do a log type transform to the data. Popular is to take the natural log after adding a ‘pseudo’ count. The pseudo count enables taking log of zeros. A different, but similar, transform is the square root transform. This is what we often use. Like the log transform it effectively down weights highly expressed genes and high values, however it doesn’t require adding a pseudo count. After this filtering, normalization, and transform we can run MAGIC.</p>
+
+<p>In the below animations we show the effect of library size normalization. Notice how the trends in the two gifs are essentially opposite - the first gif shows MAGIC applied to raw counts data, where the variation is driven exclusively by UMI count, giving a misleading representation of the data. The second gif, after library size and log normalization, reflects a gene-gene relationship which matches our understanding of these genes from the literature.</p>
+
+<h4 id="without-library-size-normalization">Without library size normalization:</h4>
+
+<p><img src="/2018-10-28-magic/no_norm_magic.gif" alt="No normalization MAGIC" /></p>
+
+<h4 id="with-library-size-normalization">With library size normalization:</h4>
+
+<p><img src="/2018-10-28-magic/norm_magic.gif" alt="Normalization MAGIC" /></p>
+
+<h3 id="tutorials-and-help-running-magic">Tutorials and help running MAGIC</h3>
+
+<p>We hope that with this post we have given you more insight into the workings of MAGIC and how to effectively use it. To learn how to use MAGIC we provide documentation and several tutorials in <a href="https://github.com/KrishnaswamyLab/MAGIC" title="MAGIC Github" target="_blank">our Github directory</a>. Additionally, we have <a href="https://krishnaswamylab-help.slack.com" title="MAGIC Slack" target="_blank">a Slack group</a> dedicated to helping users of our tools.</p>
+
+    </div>
+
+    
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/magic/">magic</a>
+  
+  <a class="badge badge-light" href="/tags/scrna-seq/">scrna-seq</a>
+  
+</div>
+
+
+
+    
+
+
+
+
+
+
+<div class="media author-card" itemscope itemtype="http://schema.org/Person">
+  
+  <img class="portrait mr-3" src="/img/portrait.jpg" itemprop="image" alt="Avatar">
+  
+  <div class="media-body">
+    <h5 class="card-title" itemprop="name"><a href="/">Krishnaswamy Lab</a></h5>
+    <h6 class="card-subtitle">Genetics</h6>
+    
+    <ul class="network-icon" aria-hidden="true">
+      
+      
+      
+      
+        
+      
+      
+      
+      
+      
+        
+      
+      <li>
+        <a itemprop="sameAs" href="/#contact" >
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+      
+      
+      
+      
+        
+      
+      
+      
+      
+      
+        
+      
+      <li>
+        <a itemprop="sameAs" href="https://twitter.com/GeorgeCushen" target="_blank" rel="noopener">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+      
+      
+      
+      
+      
+      
+      
+      
+        
+      
+      <li>
+        <a itemprop="sameAs" href="https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ" target="_blank" rel="noopener">
+          <i class="ai ai-google-scholar"></i>
+        </a>
+      </li>
+      
+      
+      
+      
+        
+      
+      
+      
+      
+      
+        
+      
+      <li>
+        <a itemprop="sameAs" href="https://github.com/gcushen" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i>
+        </a>
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+
+
+    
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+<div class="container">
+  <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    &copy; 2019 Krishnaswamy Lab &middot; 
+
+  </p>
+</footer>
+
+</div>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha256-VsEqElsCHSGmnmHXGQzvoWjWwoznFSZc6hs7ARLRacQ=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="/js/academic.min.70f0041f5a24c6a675ac218c98d7ef71.js"></script>
+
+    
+
+  </body>
+</html>
+

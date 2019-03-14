@@ -13,22 +13,22 @@
     
     
     <item>
-      <title>Introduction</title>
-      <link>https://dburkhardt.github.io/tutorial/introduction/</link>
-      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
-      
-      <guid>https://dburkhardt.github.io/tutorial/introduction/</guid>
-      <description>As single cell RNA-sequencing experiments become more popular, we keep on hearing a few questions over and over: &amp;ldquo;How should I start analyzing my data?&amp;rdquo; &amp;ldquo;What&amp;rsquo;s the advantage of using PHATE over t-SNE?&amp;rdquo; &amp;ldquo;How should I cluster my data?&amp;rdquo; &amp;ldquo;How can I identify differentially expressed genes between these two clusters?&amp;rdquo;
-High throughput technologies are only a few years old, and there are not many (if any) standards for analyzing a dataset.</description>
-    </item>
-    
-    <item>
       <title>1. Preprocessing</title>
       <link>https://dburkhardt.github.io/tutorial/preprocessing/</link>
       <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
       
       <guid>https://dburkhardt.github.io/tutorial/preprocessing/</guid>
       <description>1.0 Introducing scprep Scprep is a lightweight scRNA-seq toolkit for Python Data Scientists Most scRNA-seq toolkits are written in R, but we develop our tools in Python. Currently, Scanpy is the most popular toolkit for scRNA-seq analysis in Python. In fact, if you&amp;rsquo;d prefer to use that, you can find most of our lab&amp;rsquo;s analytical methods including PHATE and MAGIC in scanpy. However, scanpy has a highly structured framework for data representation and a steep learning curve that is unnescessary for users already comfortable with the suite of methods available in Pandas, Scipy, and Sklearn.</description>
+    </item>
+    
+    <item>
+      <title>1. What is single cell?</title>
+      <link>https://dburkhardt.github.io/tutorial/what_is_single_cell/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/what_is_single_cell/</guid>
+      <description>Recent advances in single cell proteomics and transcriptomics make it easier to collect single cell measurements across biological systems. The two most common methods are single cell RNA-sequencing and CyTOF. Although we will focus on scRNA-seq in this tutorial, the concepts important for single cell analysis generally hold across technologies. This is especially true for visualization, clustering, and differential expression.
+Why single cell? Single cells are one of the basic units of biology.</description>
     </item>
     
     <item>

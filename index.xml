@@ -156,6 +156,158 @@
     </item>
     
     <item>
+      <title>1. What is single cell?</title>
+      <link>https://dburkhardt.github.io/tutorial/what_is_single_cell/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
+      
+      <guid>https://dburkhardt.github.io/tutorial/what_is_single_cell/</guid>
+      <description>
+
+&lt;p&gt;Recent advances in single cell proteomics and transcriptomics make it easier to collect single cell measurements across biological systems. The two most common methods are single cell RNA-sequencing and CyTOF. Although we will focus on scRNA-seq in this tutorial, the concepts important for single cell analysis generally hold across technologies. This is especially true for visualization, clustering, and differential expression.&lt;/p&gt;
+
+&lt;h2 id=&#34;why-single-cell&#34;&gt;Why single cell?&lt;/h2&gt;
+
+&lt;p&gt;Single cells are one of the basic units of biology. We generally think of single cells as the &lt;em&gt;things&lt;/em&gt; that act on themselves and surrounding extracellular structures to perform basic tasks such as moving appendages, processing external stimuli, defending the organism from infectious invaders, &lt;em&gt;etc.&lt;/em&gt;. Because these units are so important for the function of an organism, it&amp;rsquo;s naturally to wonder how many different kinds of cells are in a specific tissue, how these cells change over time, and how cells differ between individuals.&lt;/p&gt;
+
+&lt;p&gt;Although the genome provides information for all these phenomena, it is the differences in expression of individual genes (at the DNA, RNA, and protein level) that account for differences in function across cell types. Because individual genes in individual cells effect functions in biological systems, one can understand why averaging expression across many cell types mixed at unknown ratios&amp;ndash;as done in bulk RNA-seq&amp;ndash;limits biological insight.&lt;/p&gt;
+
+&lt;h2 id=&#34;a-brief-history-of-scrna-seq&#34;&gt;A brief history of scRNA-seq&lt;/h2&gt;
+
+&lt;p&gt;Measuring gene expression in single cells has been around since at least 1992, when J. Eberwine &lt;em&gt;et al.&lt;/em&gt; published the first single cell qPCR assay in &lt;a href=&#34;https://doi.org/10.1073/pnas.89.7.3010&#34; target=&#34;_blank&#34;&gt;&lt;em&gt;Analysis of gene expression in single live neurons&lt;/em&gt; (1992)&lt;/a&gt;. They measured expression of roughly one dozen genes in 15 neurons isolated from the brain of a rat and characterized two distinct populations based on ion channel expression. Shortly thereafter in 1998, developments in smFISH (single molecule Fluorescence In Situ Hybridization) provided the a way to visualize expression of individual mRNA molecules in single cells &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/9554849&#34; target=&#34;_blank&#34;&gt;(Femino AM, et al. 1998)&lt;/a&gt;. smFISH remains the current gold standard for single cell RNA quantification and is used for validation of many scRNA-seq methods. In 2003, Kamme F &lt;em&gt;et al.&lt;/em&gt; expanded the set of genes assayable in single cells using microarrays &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/12736331&#34; target=&#34;_blank&#34;&gt;(Kamme F. &lt;em&gt;et al.&lt;/em&gt; 2003)&lt;/a&gt;. In that study, a groundbreaking ~4500 genes were assayed in 11 cells.&lt;/p&gt;
+
+&lt;p&gt;All the above methods rely on some method of hybridization to nucleic acid probes. It wasn&amp;rsquo;t until 2009, however, when RNA sequencing expanded single cell RNA profiling to the entire transcriptome &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/19349980&#34; target=&#34;_blank&#34;&gt;(Tang, F. &lt;em&gt;et al.&lt;/em&gt; 2009)&lt;/a&gt;. This protocol and subsequent single cell protocols require the manual isolation of individual cells into PCR tubes for cDNA amplification. The time-consuming nature of this technique and high cost of preparing relatively large microliter-scale reverse transcription reactions kept dataset sizes down in the range of dozens of cells per sample. In 2012, Fluidigm introduced the C1 microfluidic device that (at the time) automatically captured up to 96 cells from a single cell suspension created single-cell libraries using nanoliter reaction volumes.&lt;/p&gt;
+
+&lt;p&gt;The biggest disruption to single cell transcriptomics arrived in the summer of 2015 when two groups at Harvard published independent microfluidics technologies to capture cells in nanoliter droplets (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/26000488&#34; target=&#34;_blank&#34;&gt;Macosko EZ. &lt;em&gt;et al.&lt;/em&gt; 2015&lt;/a&gt;; &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/26000487&#34; target=&#34;_blank&#34;&gt;Klein, AM. &lt;em&gt;et al.&lt;/em&gt; 2015&lt;/a&gt;). The speed, scalability, and low cost of these methods suddenly made it possible to profile tens of thousands of cells in a single experiment. These droplet single cell approaches were commercialized by 10X Genomics in 2016 in their $125k lunch-box sized Chromium device (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28091601&#34; target=&#34;_blank&#34;&gt;Zheng, GZ. &lt;em&gt;et al.&lt;/em&gt; 2017&lt;/a&gt;). Since then, there have been several advances in single cell transcriptomics, including the ability to capture simultaneously cell surface epitopes and transcriptomes in single cells (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28759029&#34; target=&#34;_blank&#34;&gt;Stoeckius M., &lt;em&gt;et al.&lt;/em&gt; 2017&lt;/a&gt;) and efficient split-pool library preparation methods (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28192419&#34; target=&#34;_blank&#34;&gt;Gierahn TM. &lt;em&gt;et al.&lt;/em&gt; 2017&lt;/a&gt;). However, most of the data our lab analyzes comes from the 10X Genomics 3&amp;rsquo; Single Cell library prep kit.&lt;/p&gt;
+
+&lt;h2 id=&#34;how-to-capture-cells-in-droplets&#34;&gt;How to capture cells in droplets&lt;/h2&gt;
+
+&lt;p&gt;Capturing mRNA from individual cells is a challenging goal. The first challenge is isoalting individual cells for reverse transcription. In droplet based methods this is done using a microfluidic chip. The following schematic from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28091601&#34; target=&#34;_blank&#34;&gt;Zheng, GZ. &lt;em&gt;et al.&lt;/em&gt; (2017)&lt;/a&gt; shows how this works.&lt;/p&gt;
+
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/10x_cell_capture.png&#34; alt=&#34;*Image from [Zheng, GZ. et al. (2017)](https://www.ncbi.nlm.nih.gov/pubmed/28091601)*&#34; /&gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  
+  &lt;p&gt;
+    &lt;em&gt;Image from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28091601&#34; target=&#34;_blank&#34;&gt;Zheng, GZ. et al. (2017)&lt;/a&gt;&lt;/em&gt;
+    
+    
+    
+  &lt;/p&gt; 
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
+&lt;p&gt;The chip captures beads loaded with barcoded library adapters and individual cells into droplets. These droplets form an emulsion because they are suspended in oil. In the next image, you can see a single looped cell capture event on a DropSeq chip.&lt;/p&gt;
+
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/dropseq_capture.gif&#34; alt=&#34;*Image from [dropseq.org](https://www.dropseq.org)*&#34; /&gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  
+  &lt;p&gt;
+    &lt;em&gt;Image from &lt;a href=&#34;https://www.dropseq.org&#34; target=&#34;_blank&#34;&gt;dropseq.org&lt;/a&gt;&lt;/em&gt;
+    
+    
+    
+  &lt;/p&gt; 
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
+&lt;p&gt;Here, a single cell (bottom) joins a bead in lysis buffer (left) as they flow through the chip. Oil flows in through the channels in the middle and pinch off individual droplets.&lt;/p&gt;
+
+&lt;p&gt;Although the exact nature of the bead varies between technologies, the basic idea is that each bead contains uniquely-barcoded adapters with: an oligo d(T) that hybridizes to poly-A tails, a cell barcode, a unique molecular identifier, and reverse transcription primers.&lt;/p&gt;
+
+&lt;h2 id=&#34;scrna-seq-library-preparation&#34;&gt;scRNA-seq library preparation&lt;/h2&gt;
+
+&lt;p&gt;Although you probably know this, let&amp;rsquo;s start by reviewing the basic structure of an mRNA.&lt;/p&gt;
+
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/gene_model.jpg&#34; alt=&#34;*Image from [APASdb](http://genome.bucm.edu.cn/utr/)*&#34; /&gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  
+  &lt;p&gt;
+    &lt;em&gt;Image from &lt;a href=&#34;http://genome.bucm.edu.cn/utr/&#34; target=&#34;_blank&#34;&gt;APASdb&lt;/a&gt;&lt;/em&gt;
+    
+    
+    
+  &lt;/p&gt; 
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
+&lt;p&gt;In the standard 3&amp;rsquo; library preparation, the goal is to select for mRNA using the polyA tail. Selection is necessary because the majority of RNA in a cell consists of ribosomal RNA (rRNA) and transfer RNA (tRNA). We don&amp;rsquo;t want to sequence these functional RNAs because they don&amp;rsquo;t give us information about gene expression. To select poly-adenylated mRNA, the library adapters include a long stretch of thymines (Ts) that hybridize with the long stretch of adenines (As) in the polyA tail.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/30089906&#34; target=&#34;_blank&#34;&gt;La Manno, G. &lt;em&gt;et al.&lt;/em&gt; (2018)&lt;/a&gt; found that these library adapters also prime internally (&lt;em&gt;i.e.&lt;/em&gt; more 5&amp;rsquo; than the polyA) making it possible to sequence the introns of newly-transcribed pre-mRNA molecules facilitating the detection of actively expressed genes.&lt;/p&gt;
+
+&lt;p&gt;Following hybridization of adapters, the basic steps for library preparation are as follows:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Cell is captured in droplet with bead&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;Cell lyses in hypotonic buffer within droplet&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;3&amp;rsquo; barcoded-adapter hybridizes to polyA tails on mRNA&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;First strand reverse transcription (RT)&lt;/li&gt;
+&lt;li&gt;Second strand RT&lt;/li&gt;
+&lt;li&gt;PCR amplification&lt;/li&gt;
+&lt;li&gt;Fractionation and size selection&lt;/li&gt;
+&lt;li&gt;5&amp;rsquo; adapter ligation&lt;/li&gt;
+&lt;li&gt;Final amplification&lt;/li&gt;
+&lt;li&gt;Sequencing&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;p&gt;The exact library preparation protocol will vary by technology (and version thereof). For a detailed explanation of the library preparation, consult technical documentation for whichever technology you&amp;rsquo;ll use.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+&lt;p&gt;Because of the size selection and PCR amplification primed using the 3&amp;rsquo; and 5&amp;rsquo; adapters, the library is heavily 3&amp;rsquo; biased with the majority of the read coverage falling ~200nt from the 3&amp;rsquo; untranslated region (UTR) of the mRNA. Note, however, that annotated 3&amp;rsquo; UTRs do not always correspond to the actual isoform expressed in a sample. For this reason, you may get coverage &amp;ldquo;past&amp;rdquo; the end of the gene.&lt;/p&gt;
+
+&lt;p&gt;In the following plot, I took the 9K PBMC dataset from 10X Genomics and plotted coverage over the top 500 expressed genes relative to the annotated 3&amp;rsquo; UTR.&lt;/p&gt;
+
+
+
+
+&lt;figure class=&#34;img-md&#34;&gt;
+
+&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/coverage_over_utr3.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;h2 id=&#34;special-considerations-for-single-cell-data&#34;&gt;Special considerations for single cell data&lt;/h2&gt;
+
+&lt;p&gt;Single cell datasets are unlike most other biological datasets for several reasons. First, these datasets are &lt;em&gt;large&lt;/em&gt;. When analyzing bulk RNA-seq data, it is common to have roughly 2 to 10 datasets. A massive dataset, like the one generated by the  GTEx (Genotype-Tissue Expression) consortium, might have 50,000 gene expression measurements. Compare this to the 1.3 million cells dataset generated by 10X Genomics in 2017. Even a lab with no experience generating large biomedical data can use scRNA-seq to measure gene expression in several thousand cells. The sheer number of observations in these datasets necessitate special computational approaches to analyze them.&lt;/p&gt;
+
+&lt;p&gt;Another reason that single cell datasets are challenging to analyze is they are &lt;em&gt;high dimensional&lt;/em&gt;. Compared to more common single cell methods like FACS or single cell qPCR or microarrays, scRNA-seq datasets comprise many more features per cell. This makes it difficult to understand things like &amp;ldquo;which cells are close to which?&amp;rdquo; or &amp;ldquo;what genes are most similar?&amp;rdquo;. Thankfully, we can make some simplifying assumptions that make tackling these questions easier.&lt;/p&gt;
+
+&lt;p&gt;Single cell data is also &lt;em&gt;noisy&lt;/em&gt;. In scRNA-seq, it is estimated that only 10-40% of the hundreds of thousands of genes in a cell are captured during reverse transcription.&lt;/p&gt;
+
+&lt;h2 id=&#34;common-goals-for-analysis-of-scrna-seq-data&#34;&gt;Common goals for analysis of scRNA-seq data&lt;/h2&gt;
+</description>
+    </item>
+    
+    <item>
       <title>1. Preprocessing</title>
       <link>https://dburkhardt.github.io/tutorial/preprocessing/</link>
       <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
@@ -435,158 +587,6 @@ data_ln &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scprep&lt;span 
 &lt;h4 id=&#34;we-re-done-preprocessing&#34;&gt;We&amp;rsquo;re done preprocessing!&lt;/h4&gt;
 
 &lt;p&gt;Congratulations, we&amp;rsquo;re ready to start visualizing!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>1. What is single cell?</title>
-      <link>https://dburkhardt.github.io/tutorial/what_is_single_cell/</link>
-      <pubDate>Sun, 09 Sep 2018 00:00:00 -0400</pubDate>
-      
-      <guid>https://dburkhardt.github.io/tutorial/what_is_single_cell/</guid>
-      <description>
-
-&lt;p&gt;Recent advances in single cell proteomics and transcriptomics make it easier to collect single cell measurements across biological systems. The two most common methods are single cell RNA-sequencing and CyTOF. Although we will focus on scRNA-seq in this tutorial, the concepts important for single cell analysis generally hold across technologies. This is especially true for visualization, clustering, and differential expression.&lt;/p&gt;
-
-&lt;h2 id=&#34;why-single-cell&#34;&gt;Why single cell?&lt;/h2&gt;
-
-&lt;p&gt;Single cells are one of the basic units of biology. We generally think of single cells as the &lt;em&gt;things&lt;/em&gt; that act on themselves and surrounding extracellular structures to perform basic tasks such as moving appendages, processing external stimuli, defending the organism from infectious invaders, &lt;em&gt;etc.&lt;/em&gt;. Because these units are so important for the function of an organism, it&amp;rsquo;s naturally to wonder how many different kinds of cells are in a specific tissue, how these cells change over time, and how cells differ between individuals.&lt;/p&gt;
-
-&lt;p&gt;Although the genome provides information for all these phenomena, it is the differences in expression of individual genes (at the DNA, RNA, and protein level) that account for differences in function across cell types. Because individual genes in individual cells effect functions in biological systems, one can understand why averaging expression across many cell types mixed at unknown ratios&amp;ndash;as done in bulk RNA-seq&amp;ndash;limits biological insight.&lt;/p&gt;
-
-&lt;h2 id=&#34;a-brief-history-of-scrna-seq&#34;&gt;A brief history of scRNA-seq&lt;/h2&gt;
-
-&lt;p&gt;Measuring gene expression in single cells has been around since at least 1992, when J. Eberwine &lt;em&gt;et al.&lt;/em&gt; published the first single cell qPCR assay in &lt;a href=&#34;https://doi.org/10.1073/pnas.89.7.3010&#34; target=&#34;_blank&#34;&gt;&lt;em&gt;Analysis of gene expression in single live neurons&lt;/em&gt; (1992)&lt;/a&gt;. They measured expression of roughly one dozen genes in 15 neurons isolated from the brain of a rat and characterized two distinct populations based on ion channel expression. Shortly thereafter in 1998, developments in smFISH (single molecule Fluorescence In Situ Hybridization) provided the a way to visualize expression of individual mRNA molecules in single cells &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/9554849&#34; target=&#34;_blank&#34;&gt;(Femino AM, et al. 1998)&lt;/a&gt;. smFISH remains the current gold standard for single cell RNA quantification and is used for validation of many scRNA-seq methods. In 2003, Kamme F &lt;em&gt;et al.&lt;/em&gt; expanded the set of genes assayable in single cells using microarrays &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/12736331&#34; target=&#34;_blank&#34;&gt;(Kamme F. &lt;em&gt;et al.&lt;/em&gt; 2003)&lt;/a&gt;. In that study, a groundbreaking ~4500 genes were assayed in 11 cells.&lt;/p&gt;
-
-&lt;p&gt;All the above methods rely on some method of hybridization to nucleic acid probes. It wasn&amp;rsquo;t until 2009, however, when RNA sequencing expanded single cell RNA profiling to the entire transcriptome &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/19349980&#34; target=&#34;_blank&#34;&gt;(Tang, F. &lt;em&gt;et al.&lt;/em&gt; 2009)&lt;/a&gt;. This protocol and subsequent single cell protocols require the manual isolation of individual cells into PCR tubes for cDNA amplification. The time-consuming nature of this technique and high cost of preparing relatively large microliter-scale reverse transcription reactions kept dataset sizes down in the range of dozens of cells per sample. In 2012, Fluidigm introduced the C1 microfluidic device that (at the time) automatically captured up to 96 cells from a single cell suspension created single-cell libraries using nanoliter reaction volumes.&lt;/p&gt;
-
-&lt;p&gt;The biggest disruption to single cell transcriptomics arrived in the summer of 2015 when two groups at Harvard published independent microfluidics technologies to capture cells in nanoliter droplets (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/26000488&#34; target=&#34;_blank&#34;&gt;Macosko EZ. &lt;em&gt;et al.&lt;/em&gt; 2015&lt;/a&gt;; &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/26000487&#34; target=&#34;_blank&#34;&gt;Klein, AM. &lt;em&gt;et al.&lt;/em&gt; 2015&lt;/a&gt;). The speed, scalability, and low cost of these methods suddenly made it possible to profile tens of thousands of cells in a single experiment. These droplet single cell approaches were commercialized by 10X Genomics in 2016 in their $125k lunch-box sized Chromium device (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28091601&#34; target=&#34;_blank&#34;&gt;Zheng, GZ. &lt;em&gt;et al.&lt;/em&gt; 2017&lt;/a&gt;). Since then, there have been several advances in single cell transcriptomics, including the ability to capture simultaneously cell surface epitopes and transcriptomes in single cells (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28759029&#34; target=&#34;_blank&#34;&gt;Stoeckius M., &lt;em&gt;et al.&lt;/em&gt; 2017&lt;/a&gt;) and efficient split-pool library preparation methods (&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28192419&#34; target=&#34;_blank&#34;&gt;Gierahn TM. &lt;em&gt;et al.&lt;/em&gt; 2017&lt;/a&gt;). However, most of the data our lab analyzes comes from the 10X Genomics 3&amp;rsquo; Single Cell library prep kit.&lt;/p&gt;
-
-&lt;h2 id=&#34;how-to-capture-cells-in-droplets&#34;&gt;How to capture cells in droplets&lt;/h2&gt;
-
-&lt;p&gt;Capturing mRNA from individual cells is a challenging goal. The first challenge is isoalting individual cells for reverse transcription. In droplet based methods this is done using a microfluidic chip. The following schematic from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28091601&#34; target=&#34;_blank&#34;&gt;Zheng, GZ. &lt;em&gt;et al.&lt;/em&gt; (2017)&lt;/a&gt; shows how this works.&lt;/p&gt;
-
-
-
-
-&lt;figure class=&#34;img-md&#34;&gt;
-
-&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/10x_cell_capture.png&#34; alt=&#34;*Image from [Zheng, GZ. et al. (2017)](https://www.ncbi.nlm.nih.gov/pubmed/28091601)*&#34; /&gt;
-
-
-
-&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
-  
-  &lt;p&gt;
-    &lt;em&gt;Image from &lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/28091601&#34; target=&#34;_blank&#34;&gt;Zheng, GZ. et al. (2017)&lt;/a&gt;&lt;/em&gt;
-    
-    
-    
-  &lt;/p&gt; 
-&lt;/figcaption&gt;
-
-&lt;/figure&gt;
-
-&lt;p&gt;The chip captures beads loaded with barcoded library adapters and individual cells into droplets. These droplets form an emulsion because they are suspended in oil. In the next image, you can see a single looped cell capture event on a DropSeq chip.&lt;/p&gt;
-
-
-
-
-&lt;figure class=&#34;img-md&#34;&gt;
-
-&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/dropseq_capture.gif&#34; alt=&#34;*Image from [dropseq.org](https://www.dropseq.org)*&#34; /&gt;
-
-
-
-&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
-  
-  &lt;p&gt;
-    &lt;em&gt;Image from &lt;a href=&#34;https://www.dropseq.org&#34; target=&#34;_blank&#34;&gt;dropseq.org&lt;/a&gt;&lt;/em&gt;
-    
-    
-    
-  &lt;/p&gt; 
-&lt;/figcaption&gt;
-
-&lt;/figure&gt;
-
-&lt;p&gt;Here, a single cell (bottom) joins a bead in lysis buffer (left) as they flow through the chip. Oil flows in through the channels in the middle and pinch off individual droplets.&lt;/p&gt;
-
-&lt;p&gt;Although the exact nature of the bead varies between technologies, the basic idea is that each bead contains uniquely-barcoded adapters with: an oligo d(T) that hybridizes to poly-A tails, a cell barcode, a unique molecular identifier, and reverse transcription primers.&lt;/p&gt;
-
-&lt;h2 id=&#34;scrna-seq-library-preparation&#34;&gt;scRNA-seq library preparation&lt;/h2&gt;
-
-&lt;p&gt;Although you probably know this, let&amp;rsquo;s start by reviewing the basic structure of an mRNA.&lt;/p&gt;
-
-
-
-
-&lt;figure class=&#34;img-md&#34;&gt;
-
-&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/gene_model.jpg&#34; alt=&#34;*Image from [APASdb](http://genome.bucm.edu.cn/utr/)*&#34; /&gt;
-
-
-
-&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
-  
-  &lt;p&gt;
-    &lt;em&gt;Image from &lt;a href=&#34;http://genome.bucm.edu.cn/utr/&#34; target=&#34;_blank&#34;&gt;APASdb&lt;/a&gt;&lt;/em&gt;
-    
-    
-    
-  &lt;/p&gt; 
-&lt;/figcaption&gt;
-
-&lt;/figure&gt;
-
-&lt;p&gt;In the standard 3&amp;rsquo; library preparation, the goal is to select for mRNA using the polyA tail. Selection is necessary because the majority of RNA in a cell consists of ribosomal RNA (rRNA) and transfer RNA (tRNA). We don&amp;rsquo;t want to sequence these functional RNAs because they don&amp;rsquo;t give us information about gene expression. To select poly-adenylated mRNA, the library adapters include a long stretch of thymines (Ts) that hybridize with the long stretch of adenines (As) in the polyA tail.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://www.ncbi.nlm.nih.gov/pubmed/30089906&#34; target=&#34;_blank&#34;&gt;La Manno, G. &lt;em&gt;et al.&lt;/em&gt; (2018)&lt;/a&gt; found that these library adapters also prime internally (&lt;em&gt;i.e.&lt;/em&gt; more 5&amp;rsquo; than the polyA) making it possible to sequence the introns of newly-transcribed pre-mRNA molecules facilitating the detection of actively expressed genes.&lt;/p&gt;
-
-&lt;p&gt;Following hybridization of adapters, the basic steps for library preparation are as follows:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Cell is captured in droplet with bead&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;Cell lyses in hypotonic buffer within droplet&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;3&amp;rsquo; barcoded-adapter hybridizes to polyA tails on mRNA&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;First strand reverse transcription (RT)&lt;/li&gt;
-&lt;li&gt;Second strand RT&lt;/li&gt;
-&lt;li&gt;PCR amplification&lt;/li&gt;
-&lt;li&gt;Fractionation and size selection&lt;/li&gt;
-&lt;li&gt;5&amp;rsquo; adapter ligation&lt;/li&gt;
-&lt;li&gt;Final amplification&lt;/li&gt;
-&lt;li&gt;Sequencing&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;div class=&#34;alert alert-note&#34;&gt;
-  &lt;p&gt;The exact library preparation protocol will vary by technology (and version thereof). For a detailed explanation of the library preparation, consult technical documentation for whichever technology you&amp;rsquo;ll use.&lt;/p&gt;
-
-&lt;/div&gt;
-
-
-&lt;p&gt;Because of the size selection and PCR amplification primed using the 3&amp;rsquo; and 5&amp;rsquo; adapters, the library is heavily 3&amp;rsquo; biased with the majority of the read coverage falling ~200nt from the 3&amp;rsquo; untranslated region (UTR) of the mRNA. Note, however, that annotated 3&amp;rsquo; UTRs do not always correspond to the actual isoform expressed in a sample. For this reason, you may get coverage &amp;ldquo;past&amp;rdquo; the end of the gene.&lt;/p&gt;
-
-&lt;p&gt;In the following plot, I took the 9K PBMC dataset from 10X Genomics and plotted coverage over the top 500 expressed genes relative to the annotated 3&amp;rsquo; UTR.&lt;/p&gt;
-
-
-
-
-&lt;figure class=&#34;img-md&#34;&gt;
-
-&lt;img src=&#34;https://dburkhardt.github.io/img/how_to_single_cell/coverage_over_utr3.png&#34; /&gt;
-
-
-&lt;/figure&gt;
-
-&lt;h2 id=&#34;special-considerations-for-single-cell-data&#34;&gt;Special considerations for single cell data&lt;/h2&gt;
-
-&lt;p&gt;Single cell datasets are unlike most other biological datasets for several reasons. First, these datasets are &lt;em&gt;large&lt;/em&gt;. When analyzing bulk RNA-seq data, it is common to have roughly 2 to 10 datasets. A massive dataset, like the one generated by the  GTEx (Genotype-Tissue Expression) consortium, might have 50,000 gene expression measurements. Compare this to the 1.3 million cells dataset generated by 10X Genomics in 2017. Even a lab with no experience generating large biomedical data can use scRNA-seq to measure gene expression in several thousand cells. The sheer number of observations in these datasets necessitate special computational approaches to analyze them.&lt;/p&gt;
-
-&lt;p&gt;Another reason that single cell datasets are challenging to analyze is they are &lt;em&gt;high dimensional&lt;/em&gt;. Compared to more common single cell methods like FACS or single cell qPCR or microarrays, scRNA-seq datasets comprise many more features per cell. This makes it difficult to understand things like &amp;ldquo;which cells are close to which?&amp;rdquo; or &amp;ldquo;what genes are most similar?&amp;rdquo;. Thankfully, we can make some simplifying assumptions that make tackling these questions easier.&lt;/p&gt;
-
-&lt;p&gt;Single cell data is also &lt;em&gt;noisy&lt;/em&gt;. In scRNA-seq, it is estimated that only 10-40% of the hundreds of thousands of genes in a cell are captured during reverse transcription.&lt;/p&gt;
-
-&lt;h2 id=&#34;common-goals-for-analysis-of-scrna-seq-data&#34;&gt;Common goals for analysis of scRNA-seq data&lt;/h2&gt;
 </description>
     </item>
     

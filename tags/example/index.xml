@@ -6,8 +6,8 @@
     <description>Recent content in example on Krishnaswamy Lab</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>&amp;copy; 2019 Krishnaswamy Lab</copyright>
-    <lastBuildDate>Tue, 01 Jan 2019 00:00:00 +0000</lastBuildDate>
+    <copyright>&amp;copy; 2021 Krishnaswamy Lab</copyright>
+    <lastBuildDate>Tue, 01 Jan 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://dburkhardt.github.io/tags/example/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Math Sample</title>
       <link>https://dburkhardt.github.io/post/math-sample/</link>
-      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 01 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://dburkhardt.github.io/post/math-sample/</guid>
       <description>&lt;p&gt;KaTeX can be used to generate complex math formulas server-side.&lt;/p&gt;

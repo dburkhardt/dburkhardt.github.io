@@ -1,13 +1,80 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Four-minute talk timer</title><style>
-*{box-sizing:border-box}body{margin:0;background:#d5f2dc;color:#14221b;font-family:system-ui,-apple-system,sans-serif;transition:background 1s;min-height:100svh;display:grid;place-items:center}body.yellow{background:#ffe07a;color:#332700}body.red{background:#f06b68;color:#310b0b}main{width:100%;text-align:center;padding:30px 20px}header{font-size:14px;font-weight:700;letter-spacing:.22em}#clock{font-size:clamp(100px,25vw,290px);font-weight:750;line-height:1.2;letter-spacing:-.055em;font-variant-numeric:tabular-nums;margin:22px 0 0}#status{height:40px;font-size:clamp(20px,3vw,32px);font-weight:600;margin-bottom:30px}.controls{display:flex;justify-content:center;gap:16px}button{font:600 21px system-ui;border:2px solid #14221b25;border-radius:18px;padding:20px 34px;background:#ffffff70;color:inherit;touch-action:manipulation;cursor:pointer;min-width:135px}button:focus-visible{outline:4px solid #2656c9;outline-offset:4px}#toggle{background:#17251e;color:white;border-color:transparent}.extras{margin-top:28px;display:flex;gap:22px;justify-content:center;align-items:center;flex-wrap:wrap}.extras button{font-size:15px;min-width:0;padding:12px 18px}label{display:flex;align-items:center;gap:10px;font-size:15px}input{width:100px}footer{font-size:13px;opacity:.7;margin-top:24px}#audioNote{font-size:13px;min-height:18px;margin-top:12px}@media(max-height:550px){main{padding:15px}#clock{font-size:30vh;margin:0}#status{margin-bottom:12px}.extras{margin-top:12px}footer{margin-top:12px}}
-</style></head><body><main><header>FOUR-MINUTE TALKS</header><div id="clock" role="timer" aria-label="Time remaining">4:00</div><div id="status" aria-live="polite">Ready when you are</div><div class="controls"><button id="toggle">Start</button><button id="reset">Reset</button></div><div class="extras"><button id="test">Test music</button><label>Volume <input id="volume" aria-label="Music volume" type="range" min="0" max="1" step=".05" value=".65"></label></div><div id="audioNote"></div><footer>Yellow at 1:00 · Red at 0:00 · Music fades in over 20 seconds<br>Keep this screen open and your iPad volume up. · Audio v2</footer></main><script>
+*{box-sizing:border-box}body{margin:0;background:#d5f2dc;color:#14221b;font-family:system-ui,-apple-system,sans-serif;transition:background 1s;min-height:100svh;display:grid;place-items:center}body.yellow{background:#ffe07a;color:#332700}body.red{background:#f06b68;color:#310b0b}main{width:100%;text-align:center;padding:30px 20px}header{font-size:14px;font-weight:700;letter-spacing:.22em}#clock{font-size:clamp(100px,25vw,290px);font-weight:750;line-height:1.2;letter-spacing:-.055em;font-variant-numeric:tabular-nums;margin:22px 0 0}#status{height:40px;font-size:clamp(20px,3vw,32px);font-weight:600;margin-bottom:30px}.controls{display:flex;justify-content:center;gap:16px}button{font:600 21px system-ui;border:2px solid #14221b25;border-radius:18px;padding:20px 34px;background:#ffffff70;color:inherit;touch-action:manipulation;cursor:pointer;min-width:135px}button:focus-visible{outline:4px solid #2656c9;outline-offset:4px}#toggle{background:#17251e;color:white;border-color:transparent}.extras{margin-top:28px;display:flex;gap:22px;justify-content:center;align-items:center;flex-wrap:wrap}.extras button{font-size:15px;min-width:0;padding:12px 18px}label{display:flex;align-items:center;gap:10px;font-size:15px}input{width:100px}select{font:500 16px system-ui;padding:12px;border:1px solid #14221b40;border-radius:12px;background:#ffffffb0;color:#14221b;max-width:100%}footer{font-size:13px;opacity:.7;margin-top:24px}#audioNote{font-size:13px;min-height:18px;margin-top:12px}@media(max-height:550px){main{padding:15px}#clock{font-size:30vh;margin:0}#status{margin-bottom:12px}.extras{margin-top:12px}footer{margin-top:12px}}
+</style></head><body><main><header>FOUR-MINUTE TALKS</header><div id="clock" role="timer" aria-label="Time remaining">4:00</div><div id="status" aria-live="polite">Ready when you are</div><div class="controls"><button id="toggle">Start</button><button id="reset">Reset</button></div><div class="extras"><label>Sound <select id="sound"><option value="finale">Grand Finale</option><option value="jazz">Jazz Lounge</option><option value="piano">Gentle Piano</option><option value="strings">Cinematic Strings</option><option value="game">Game Show</option></select></label><button id="test">Test music</button><label>Volume <input id="volume" aria-label="Music volume" type="range" min="0" max="1" step=".05" value=".65"></label></div><div id="audioNote"></div><footer>Yellow at 1:00 · Red at 0:00 · Music fades in over 20 seconds<br>Keep this screen open and your iPad volume up. · Five sounds · v3</footer></main><script>
 const $=id=>document.getElementById(id);let remaining=240000,deadline=0,running=false,ended=false,ctx,master,track,previewTimer,wake;
 function render(){let s=Math.ceil(Math.max(0,remaining)/1000);$('clock').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');document.body.className=ended?'red':remaining<=60000?'yellow':'';$('toggle').textContent=running?'Pause':ended?'Resume music':remaining<240000?'Resume':'Start';let msg=ended?'Time’s up — wrap it up':!running?(remaining<240000?'Paused':'Ready when you are'):remaining<=60000?'One minute left':'You have the floor';if($('status').textContent!==msg)$('status').textContent=msg}
 function initAudio(){try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}try{ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();ctx.resume().then(()=>{$('audioNote').textContent=ctx.state==='running'?'Audio ready · If silent, check Control Center → Silent Mode.':'Audio paused — tap Test music again.'}).catch(()=>{$('audioNote').textContent='Audio unavailable. Try Test music again.'});if(!master){master=ctx.createGain();master.gain.value=Number($('volume').value);master.connect(ctx.destination)}return true}catch(e){$('audioNote').textContent='Audio is unavailable in this preview.';return false}}
-function note(bus,midi,time,len,type,level){const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=440*Math.pow(2,(midi-69)/12);g.gain.setValueAtTime(0,time);g.gain.linearRampToValueAtTime(level,time+.07);g.gain.exponentialRampToValueAtTime(.0001,time+len);o.connect(g);g.connect(bus);o.start(time);o.stop(time+len+.05)}
-function stopMusic(){clearTimeout(previewTimer);if(track){clearInterval(track.scheduler);track.bus.disconnect();track=null}$('test').textContent='Test music'}
-function music(test=false){stopMusic();if(!initAudio())return;const bus=ctx.createGain(),start=ctx.currentTime+.06;bus.connect(master);bus.gain.setValueAtTime(test?.65:.001,start);bus.gain.linearRampToValueAtTime(.65,start+(test?.1:20));let bar=0,next=start;const chords=[[48,55,60,64],[45,52,57,60],[53,60,65,69],[55,62,65,71]],melody=[[76,79,81,79,76,74],[72,76,79,76,72,71],[69,72,77,79,77,76],[74,77,79,83,81,79]];function schedule(){while(next<ctx.currentTime+3){const c=chords[bar%4],m=melody[bar%4];c.forEach(n=>{note(bus,n,next,2.7,'triangle',.075);note(bus,n+12,next,2.6,'sine',.024)});m.forEach((n,i)=>note(bus,n,next+i*.45,.7,'triangle',.095));next+=2.7;bar++}}schedule();track={bus,scheduler:setInterval(schedule,350)}}
+
+const cues={
+ finale:{beat:.45,beats:6,type:'triangle',attack:.07,hold:0,level:.095,
+ chords:[[48,55,60,64],[45,52,57,60],[53,60,65,69],[55,62,65,71]],
+ tunes:[[76,79,81,79,76,74],[72,76,79,76,72,71],[69,72,77,79,77,76],[74,77,79,83,81,79]]},
+ jazz:{beat:.44,beats:8,type:'sine',attack:.008,hold:0,level:.17,
+ chords:[[48,55,59,64],[45,55,60,64],[50,57,60,65],[43,53,59,64]],
+ tunes:[[76,79,82,81,79,76,74,71],[72,76,79,83,81,79,76,72],[77,81,84,83,81,77,76,74],[71,74,77,80,79,77,74,71]]},
+ piano:{beat:.65,beats:8,type:'sine',attack:.006,hold:0,level:.19,
+ chords:[[48,55,60,64],[45,52,57,60],[53,60,65,69],[43,50,55,59]],
+ tunes:[[72,76,79,84,79,76,74,76],[69,72,76,81,76,72,71,72],[72,77,81,84,81,77,76,77],[71,74,79,83,79,74,72,71]]},
+ strings:{beat:.9,beats:4,type:'sawtooth',attack:.5,hold:.65,level:.045,
+ chords:[[48,55,60,63],[44,51,56,60],[41,48,53,56],[43,50,55,59]],
+ tunes:[[75,74,72,79],[80,79,75,72],[77,75,72,68],[71,74,79,77]]},
+ game:{beat:.23,beats:8,type:'square',attack:.008,hold:0,level:.055,
+ chords:[[48,55,60,64],[53,60,65,69],[55,62,67,71],[48,55,60,64]],
+ tunes:[[72,76,79,84,83,79,76,79],[77,81,84,89,88,84,81,84],[79,83,86,91,89,86,83,79],[84,79,76,72,76,79,84,84]]}
+};
+try{const saved=localStorage.getItem('talkTimerSound');if(cues[saved])$('sound').value=saved}catch(e){}
+function note(bus,midi,time,len,type,level,attack=.07,hold=0){
+ const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;
+ o.frequency.value=440*Math.pow(2,(midi-69)/12);
+ g.gain.setValueAtTime(0,time);g.gain.linearRampToValueAtTime(level,time+attack);
+ if(hold)g.gain.setValueAtTime(level,time+attack+hold);
+ g.gain.exponentialRampToValueAtTime(.0001,time+len);
+ o.connect(g);g.connect(bus);o.start(time);o.stop(time+len+.05);
+}
+function stopMusic(){
+ clearTimeout(previewTimer);
+ if(track){clearInterval(track.scheduler);track.bus.disconnect();track=null}
+ $('test').textContent='Test music';
+}
+function music(test=false){
+ stopMusic();if(!initAudio())return;
+ const cueId=cues[$('sound').value]?$('sound').value:'finale',cue=cues[cueId];
+ const bus=ctx.createGain(),tone=ctx.createBiquadFilter(),start=ctx.currentTime+.06;
+ tone.type='lowpass';tone.frequency.value=cueId==='strings'?1800:cueId==='game'?3500:7000;
+ bus.connect(tone);tone.connect(master);
+ bus.gain.setValueAtTime(test?.65:.001,start);
+ bus.gain.linearRampToValueAtTime(.65,start+(test?.1:20));
+ let bar=0,next=start;
+ function schedule(){
+  while(next<ctx.currentTime+3){
+   const chord=cue.chords[bar%4],melody=cue.tunes[bar%4],duration=cue.beat*cue.beats;
+   if(cueId==='jazz'){
+    [0,2,4,6].forEach((beat,i)=>note(bus,chord[i%4]-12,next+beat*cue.beat,.6,'triangle',.16,.01));
+    [1,4.5].forEach(beat=>chord.slice(1).forEach(n=>note(bus,n+12,next+beat*cue.beat,.5,'triangle',.055,.01)));
+   }else if(cueId==='piano'){
+    note(bus,chord[0]-12,next,duration,'sine',.14,.01);
+    chord.forEach((n,i)=>note(bus,n,next+i*.035,2.3,'triangle',.04,.008));
+   }else if(cueId==='game'){
+    [0,2,4,6].forEach((beat,i)=>note(bus,chord[i%2],next+beat*cue.beat,.25,'triangle',.12,.005));
+   }else{
+    chord.forEach(n=>note(bus,n,next,duration+.1,cueId==='strings'?'sawtooth':'triangle',cueId==='strings'?.025:.075,cueId==='strings'?.6:.07,cueId==='strings'?1.4:0));
+   }
+   melody.forEach((n,i)=>{
+    const offset=(i+(cueId==='jazz'&&i%2?.3:0))*cue.beat;
+    const len=cueId==='piano'?2.1:cueId==='strings'?1.9:cueId==='game'?.2:.7;
+    note(bus,n,next+offset,len,cue.type,cue.level,cue.attack,cue.hold);
+    if(cueId==='piano')note(bus,n+12,next+offset,.4,'sine',.024,.004);
+   });
+   next+=duration;bar++;
+  }
+ }
+ schedule();track={bus,scheduler:setInterval(schedule,350),test,cueId};
+}
+$('sound').onchange=()=>{
+ try{localStorage.setItem('talkTimerSound',$('sound').value)}catch(e){}
+ if(track){const preview=track.test;music(preview);if(preview){$('test').textContent='Stop music';previewTimer=setTimeout(stopMusic,25000)}}
+};
 async function keepAwake(){try{if(!wake&&navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}}function releaseWake(){if(wake){wake.release();wake=null}}
 function tick(){if(running&&!ended){remaining=Math.max(0,deadline-Date.now());if(remaining===0){ended=true;music()}}render()}
 $('toggle').onclick=()=>{if(running){tick();running=false;stopMusic();releaseWake()}else{initAudio();stopMusic();running=true;deadline=Date.now()+remaining;if(ended)music();keepAwake()}render()};
